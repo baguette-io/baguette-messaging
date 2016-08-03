@@ -29,10 +29,10 @@ How it works
  
 
 
-In this code we declare two services:
+In this code we declare one service:
 
-* publish : Send messages
 * consume : Read messages
+* publish : is not a service, as it doesn't have an event loop.
 
 
 Publisher
@@ -67,9 +67,6 @@ Example
 
         [DEFAULT]
         amqp_uri = amqp://baguette:baguette@127.0.0.1:5672/baguette
-
-        [publish]
-        enabled = true
 
         [consume]
         enabled = true
