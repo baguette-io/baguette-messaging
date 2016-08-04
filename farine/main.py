@@ -5,11 +5,11 @@ Can start a module here.
 """
 import argparse
 import kombu.log
-import croissant.discovery
-import croissant.settings
-import croissant.log
+import farine.discovery
+import farine.settings
+import farine.log
 
-croissant.log.setup_logging(__name__)
+farine.log.setup_logging(__name__)
 kombu.log.setup_logging()
 
 def main():
@@ -22,8 +22,8 @@ def main():
                         dest='service', required=True)
     args = parser.parse_args()
     #1. Load settings
-    croissant.settings.load()
+    farine.settings.load()
     #2. Load the module
-    croissant.discovery.import_module(args.service)
+    farine.discovery.import_module(args.service)
     #3. Start the module
-    croissant.discovery.start()
+    farine.discovery.start()

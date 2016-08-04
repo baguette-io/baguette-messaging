@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 import json
 from fixtures import *
-from croissant.amqp import Consumer
+from farine.amqp import Consumer
 from pytest_dbfixtures import factories
 from pytest_dbfixtures.factories.rabbitmq_client import clear_rabbitmq
 

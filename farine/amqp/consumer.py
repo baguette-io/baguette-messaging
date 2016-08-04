@@ -12,8 +12,8 @@ import StringIO
 from kombu import Connection, Exchange, Queue
 from kombu.pools import producers
 from kombu.mixins import ConsumerMixin
-from croissant.mixins import EntryPointMixin
-import croissant.settings
+from farine.mixins import EntryPointMixin
+import farine.settings
 
 class Consumer(ConsumerMixin, EntryPointMixin):
     """
@@ -35,7 +35,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :rtype: None
         """
         self.service = kwargs.pop('service')
-        self.settings = getattr(croissant.settings, self.service)
+        self.settings = getattr(farine.settings, self.service)
         self.callback = kwargs.pop('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
         self.exchange = Exchange(kwargs.pop('exchange'), type=exchange_type)

@@ -1,16 +1,16 @@
 #-*- coding:utf-8 -*-
 import pytest
-import croissant.utils
+import farine.utils
 from fixtures import *
 
 
 def test_suppress_silent():
-    with croissant.utils.suppress(ValueError):
+    with farine.utils.suppress(ValueError):
         raise ValueError
 
 
 def test_suppress_raises():
     with pytest.raises(ValueError) as e:
-        with croissant.utils.suppress((RuntimeError, ZeroDivisionError)):
+        with farine.utils.suppress((RuntimeError, ZeroDivisionError)):
             raise ValueError
     assert e.type == ValueError

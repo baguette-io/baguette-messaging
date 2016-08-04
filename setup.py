@@ -30,11 +30,11 @@ setup(name='baguette-messaging',
       },
       entry_points={
           'console_scripts':[
-              'croissant=croissant.main:main',
+              'farine=farine.main:main',
           ],
       },
       package_data={
-          'croissant.tests':['rabbit.ini'],
-          'croissant.logging':['logging.yaml'],
+          'farine.tests':['rabbit.ini'],
+          'farine.logging':['logging.yaml'],
       },
      )

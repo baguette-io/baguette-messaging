@@ -1,10 +1,10 @@
 #-*- coding:utf-8 -*-
 """
-Module containing all the croissant mixins.
+Module containing all the farine mixins.
 """
 import abc
 import contextlib
-import croissant.settings
+import farine.settings
 
 class EntryPointMixin(object):
     """

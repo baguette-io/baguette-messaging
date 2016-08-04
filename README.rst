@@ -8,22 +8,22 @@ How it works
 
 .. code:: python
 
-	import croissant.amqp
+	import farine.amqp
 	
 	class Publish(object):
 	
-	    @croissant.amqp.publish()
+	    @farine.amqp.publish()
 	    def publish_dummy(self, publish):
 	        self.publish({'result':0})
 	
 	class Consume(object):
 	
-	    @croissant.amqp.consume(exchange='publish', routing_key='routing_key')
+	    @farine.amqp.consume(exchange='publish', routing_key='routing_key')
 	    def consume_dummy(self, body, message):
 	        self.publish_dummy(body)
 	        message.ack()
 	
-	    @croissant.amqp.publish(exchange='publish', routing_key='routing_key2')
+	    @farine.amqp.publish(exchange='publish', routing_key='routing_key2')
 	    def publish_consumer(self, publish, body):
 	        self.publish(body)
  
@@ -38,7 +38,7 @@ In this code we declare one service:
 Publisher
 `````````
 
-To declare a publisher, just put the decorator **@croissant.amqp.publish** on the top of your method,
+To declare a publisher, just put the decorator **@farine.amqp.publish** on the top of your method,
 then use **publish(message)** inside it to send the message.
 It will auto declare and send it to the **lowercase class name** exchange with also **lowercase class name** as routing_key.
 If you want to publish to another exchange/with another routing key add the **exchange**/**routing_key** parameter in the decorator.
@@ -47,7 +47,7 @@ If you want to publish to another exchange/with another routing key add the **ex
 Consumer
 ````````
 
-To declare a consumer, just put the decorator **@croissant.amqp.consume(exchange='publish', routing_key='routing_key')**
+To declare a consumer, just put the decorator **@farine.amqp.consume(exchange='publish', routing_key='routing_key')**
 on the top of your method, which must contains two arguments: **body** and **message**.
 
 
@@ -55,8 +55,8 @@ Configuration
 =============
 
 
-By default the configuration file is located in */etc/croissant.ini*.
-You can override this path using the environment variable **CROISSANT_CONF_FILE**.
+By default the configuration file is located in */etc/farine.ini*.
+You can override this path using the environment variable **FARINE_CONF_FILE**.
 
 It must contains a **DEFAULT** section, then one by service(using the **lowercase class name**)
 
@@ -80,7 +80,7 @@ To launch a service, just run:
 
 .. code:: shell
 
-	croissant --start=my_module
+	farine --start=my_module
 
 
 It will inspect the module for services, and launch the 'bootable' ones (the consumers).

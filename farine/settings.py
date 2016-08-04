@@ -4,8 +4,8 @@ Module containing the configuration.
 
 To load the configuration, call the `load()` function.
 
-By default the configuration's filepath */etc/croissant.ini* will be use.
-To override it, set the environment variable **CROISSANT_CONF_FILE**.
+By default the configuration's filepath */etc/farine.ini* will be use.
+To override it, set the environment variable **FARINE_CONF_FILE**.
 
 The format of the config must be compliant with configparser,
 have a [DEFAULT] section and one by service.
@@ -22,7 +22,7 @@ Example:
 import os
 import ConfigParser
 
-CONF_PATH = os.environ.get('CROISSANT_CONF_FILE', '/etc/croissant.ini')
+CONF_PATH = os.environ.get('FARINE_CONF_FILE', '/etc/farine.ini')
 DEFAULTS = {
     'type': 'direct', #Exchange's type : `direct`, `topic`, `broadcast`
     'durable': True, #Does the exchange still exist after the AMQP server restart.

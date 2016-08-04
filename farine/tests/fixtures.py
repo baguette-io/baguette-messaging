@@ -1,23 +1,23 @@
 #-*- coding:utf-8 -*-
 import pytest
-import croissant.amqp
-import croissant.log
-import croissant.settings
+import farine.amqp
+import farine.log
+import farine.settings
 import kombu.log
 from rabbitpy import Exchange, Queue
 
 @pytest.fixture(autouse=True)
 def settings():
-    croissant.settings.load()
+    farine.settings.load()
 
 @pytest.fixture(autouse=True)
 def logging():
-    croissant.log.setup_logging(__name__, False)
+    farine.log.setup_logging(__name__, False)
     kombu.log.setup_logging(loglevel='DEBUG')
 
 class Publish(object):
 
-    @croissant.amqp.publish()
+    @farine.amqp.publish()
     def publish_dummy(self, publish, message):
         publish(message)
         return True
@@ -25,7 +25,7 @@ class Publish(object):
 class Consume(object):
     messages_consumed = 0
 
-    @croissant.amqp.consume(exchange='publish', routing_key='publish', forever=False)
+    @farine.amqp.consume(exchange='publish', routing_key='publish', forever=False)
     def consume_dummy(self, body, message):
         self.messages_consumed += 1
         return True

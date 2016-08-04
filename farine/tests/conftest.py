@@ -2,7 +2,7 @@
 import os
 
 def pytest_configure(config):
-    os.environ['CROISSANT_CONF_FILE'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'croissant.ini')
+    os.environ['FARINE_CONF_FILE'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'farine.ini')
 
 def pytest_cmdline_preparse(args):
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rabbit.ini')

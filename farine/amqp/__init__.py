@@ -5,9 +5,9 @@ Module containing the class decorators:
  * consume()
 """
 import logging
-import croissant.discovery
-from croissant.amqp.publisher import Publisher
-from croissant.amqp.consumer import Consumer
+import farine.discovery
+from farine.amqp.publisher import Publisher
+from farine.amqp.consumer import Consumer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def publish(exchange=None, routing_key=None):
 
 def consume(*args, **kwargs):
     def wrapper(method):
-        croissant.discovery.ENTRYPOINTS.append((Consumer, method, args, kwargs))
+        farine.discovery.ENTRYPOINTS.append((Consumer, method, args, kwargs))
         def subwrapper(self, *args, **kwargs):
             LOGGER.info('Received message : %s %s , call %s.', args, kwargs, method.__name__)
             return method(self, *args, **kwargs)

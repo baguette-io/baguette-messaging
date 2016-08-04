@@ -8,7 +8,7 @@ The publisher module manage all the producer's messages workflow:
 import logging
 from kombu import Connection, Exchange
 from kombu.pools import producers, connections
-import croissant.settings
+import farine.settings
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class Publisher(object):
         :type routing_key: None, str
         :rtype: None
         """
-        self.settings = getattr(croissant.settings, service)
+        self.settings = getattr(farine.settings, service)
         self.routing_key = routing_key
         self.exchange = Exchange(service, type=self.settings['type'],
                                  durable=self.settings['durable'],
