@@ -4,7 +4,7 @@ import farine.amqp
 import farine.log
 import farine.settings
 import kombu.log
-from rabbitpy import Exchange, Queue
+from rabbitpy import Exchange, Queue, Message
 
 @pytest.fixture(autouse=True)
 def settings():
@@ -53,4 +53,14 @@ def queue_factory(rabbitmq, rabbitmq_proc):
         queue.bind(exchange, routing_key=routing_key)
         assert name in rabbitmq_proc.list_queues()
         return queue
+    return factory
+
+@pytest.fixture
+def message():
+    """
+    Message factory.
+    """
+    def factory(exchange, routing_key, message, channel):
+        message = Message(channel, message)
+        return message.publish(exchange, routing_key)
     return factory
