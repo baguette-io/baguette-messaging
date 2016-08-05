@@ -14,6 +14,7 @@ setup(name='baguette-messaging',
       install_requires=[
           'kombu==3.0.35',
           'gevent==1.1.1',
+          'PyYAML==3.11',
       ],
       extras_require={
           'testing': [
