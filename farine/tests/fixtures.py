@@ -47,27 +47,28 @@ def channel(rabbitmq):
 def queue_factory(rabbitmq, rabbitmq_proc):
     def factory(name, exchange, routing_key):
         channel = rabbitmq.channel()
-        exchange = Exchange(channel, exchange, durable=True)
+        exchange = Exchange(channel, exchange, auto_delete=False, durable=True)
         exchange.declare()
-        queue = Queue(channel, name, durable=True)
+        assert exchange.name in rabbitmq_proc.list_exchanges()
+        queue = Queue(channel, name, auto_delete=False, durable=True)
         queue.declare()
         queue.bind(exchange, routing_key=routing_key)
         assert name in rabbitmq_proc.list_queues()
-        return queue
+        return exchange, queue
     return factory
 
 @pytest.fixture
-def message():
+def message_factory():
     """
     Message factory.
     """
-    def factory(exchange, routing_key, message, channel):
-        message = Message(channel, message)
-        return message.publish(exchange, routing_key)
+    def factory(service, routing_key, message):
+        pub = farine.amqp.Publisher(service, routing_key)
+        return pub.send(message)
     return factory
 
 @pytest.fixture()
-def amqp_factory(request, rabbitmq, rabbitmq_proc):
+def amqp_factory(request, rabbitmq_proc, rabbitmq):
     def factory(exchange, routing_key, name, callback):
         return farine.amqp.Consumer(exchange=exchange, routing_key=routing_key, service=name, callback=callback)
     def cleanup():
