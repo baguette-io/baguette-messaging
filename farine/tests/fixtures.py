@@ -5,6 +5,7 @@ import farine.log
 import farine.settings
 import kombu.log
 from rabbitpy import Exchange, Queue, Message
+from pytest_dbfixtures.factories.rabbitmq_client import clear_rabbitmq
 
 @pytest.fixture(autouse=True)
 def settings():
@@ -66,6 +67,10 @@ def message():
     return factory
 
 @pytest.fixture()
-def amqp_factory():
+def amqp_factory(request, rabbitmq, rabbitmq_proc):
     def factory(exchange, routing_key, name, callback):
         return farine.amqp.Consumer(exchange=exchange, routing_key=routing_key, service=name, callback=callback)
+    def cleanup():
+        clear_rabbitmq(rabbitmq_proc, rabbitmq)
+    request.addfinalizer(cleanup)
+    return factory
