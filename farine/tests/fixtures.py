@@ -69,8 +69,9 @@ def message_factory():
 
 @pytest.fixture()
 def amqp_factory(request, rabbitmq_proc, rabbitmq):
-    def factory(exchange, routing_key, name, callback):
-        return farine.amqp.Consumer(exchange=exchange, routing_key=routing_key, service=name, callback=callback)
+    def factory(exchange, routing_key, name, callback, queue_name=None):
+        return farine.amqp.Consumer(exchange=exchange, routing_key=routing_key,
+            service=name, callback=callback, queue_name=queue_name)
     def cleanup():
         clear_rabbitmq(rabbitmq_proc, rabbitmq)
     request.addfinalizer(cleanup)

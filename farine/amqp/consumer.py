@@ -24,6 +24,8 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         """
         :param service: The service's name which consume.
         :type service: str
+        :param queue_name: The name of queue. Optional, default to `service` value.
+        :type queue_name: None, str
         :param exhange: The exchange's name to consume from.
         :type exchange: str
         :param exchange_type: The exchange's type. Default to 'direct'.
@@ -39,7 +41,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         self.callback = kwargs.pop('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
         self.exchange = Exchange(kwargs.pop('exchange'), type=exchange_type)
-        self.queue = Queue(self.service, exchange=self.exchange, routing_key=kwargs['routing_key'],
+        self.queue = Queue(kwargs.get('queue_name', self.service), exchange=self.exchange, routing_key=kwargs['routing_key'],
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
         self.connection = Connection(self.settings['amqp_uri'])
