@@ -64,3 +64,8 @@ def message():
         message = Message(channel, message)
         return message.publish(exchange, routing_key)
     return factory
+
+@pytest.fixture()
+def amqp_factory():
+    def factory(exchange, routing_key, name, callback):
+        return farine.amqp.Consumer(exchange=exchange, routing_key=routing_key, service=name, callback=callback)
