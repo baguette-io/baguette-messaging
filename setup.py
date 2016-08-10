@@ -35,7 +35,7 @@ setup(name='baguette-messaging',
           ],
       },
       package_data={
-          'farine.tests':['rabbit.ini'],
+          'farine.tests':['farine.ini', 'rabbit.ini'],
           'farine.log':['logging.yaml'],
       },
      )

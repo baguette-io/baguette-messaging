@@ -20,7 +20,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
     Consumer generic class.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):#pylint:disable=unused-argument
         """
         :param service: The service's name which consume.
         :type service: str
@@ -40,8 +40,14 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         self.settings = getattr(farine.settings, self.service)
         self.callback = kwargs.pop('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
-        self.exchange = Exchange(kwargs.pop('exchange'), type=exchange_type)
-        self.queue = Queue(kwargs.get('queue_name', self.service), exchange=self.exchange, routing_key=kwargs['routing_key'],
+        self.exchange = Exchange(kwargs.pop('exchange'),
+                                 type=exchange_type,
+                                 durable=self.settings['durable'],
+                                 auto_declare=self.settings['auto_declare'],
+                                 delivery_mode=self.settings['delivery_mode'])
+        self.queue = Queue(kwargs.get('queue_name', self.service),
+                           exchange=self.exchange,
+                           routing_key=kwargs['routing_key'],
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
         self.connection = Connection(self.settings['amqp_uri'])
@@ -58,7 +64,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
 
 
     @contextlib.contextmanager
-    def debug(self, body, message):
+    def debug(self, body, message):#pylint:disable=arguments-differ,unused-argument
         """
         | Rewrite/move some code?
         | EntryPointMixin requirement. Context Manager.
@@ -88,12 +94,19 @@ class Consumer(ConsumerMixin, EntryPointMixin):
             debug_message['__debug__'] = result.getvalue()
             #Send the result to the exchange
             with producers[self.connection].acquire(block=True) as producer:
-                debug_queue = Queue('debug', exchange=self.exchange, routing_key='debug', durable=True, auto_declare=True)
+                debug_queue = Queue('debug',
+                                    exchange=self.exchange,
+                                    routing_key='debug',
+                                    durable=True,
+                                    auto_declare=True)
                 producer.maybe_declare(debug_queue)
-                producer.publish(debug_message, exchange=self.exchange, declare=[self.exchange], routing_key='debug')
+                producer.publish(debug_message,
+                                 exchange=self.exchange,
+                                 declare=[self.exchange],
+                                 routing_key='debug')
 
 
-    def start(self, *args, **kwargs):
+    def start(self, *args, **kwargs):#pylint:disable=unused-argument
         """
         | Launch the consumer.
         | It can listen forever for messages or just wait for one.
