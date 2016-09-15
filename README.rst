@@ -80,7 +80,13 @@ To launch a service, just run:
 
 .. code:: shell
 
-	farine --start=my_module
+	farine --start=my_relative_service_file
+
+Or:
+
+.. code:: shell
+
+	farine --module=mymodule
 
 
 It will inspect the module for services, and launch the 'bootable' ones (the consumers).

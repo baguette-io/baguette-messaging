@@ -21,11 +21,16 @@ def main(service=None):
         parser = argparse.ArgumentParser()
         parser.add_argument('-s', '--start', type=str, help='Start the service',
                             dest='service', required=True)
+        parser.add_argument('-m', '--module', type=str, help='Start the module',
+                            dest='module')
         args = parser.parse_args()
+        if not args.service and not args.module:
+            parser.error('Please specify --start or --module')
         service = args.service
+        module = args.module
     #1. Load settings
     farine.settings.load()
     #2. Load the module
-    farine.discovery.import_module(service)
+    farine.discovery.import_module(service, module)
     #3. Start the module
     farine.discovery.start()
