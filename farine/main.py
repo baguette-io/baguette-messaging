@@ -20,7 +20,7 @@ def main(service=None):
         #Parsing
         parser = argparse.ArgumentParser()
         parser.add_argument('-s', '--start', type=str, help='Start the service',
-                            dest='service', required=True)
+                            dest='service')
         parser.add_argument('-m', '--module', type=str, help='Start the module',
                             dest='module')
         args = parser.parse_args()
