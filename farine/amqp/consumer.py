@@ -76,7 +76,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :type callback: function
         :rtype: None
         """
-        is_debug = body.get('__debug__', False)
+        is_debug = body.get('__debug__', False) if isinstance(body, dict) else False
         if not is_debug:
             yield
         else:

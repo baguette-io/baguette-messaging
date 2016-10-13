@@ -17,18 +17,20 @@ class Publisher(object):
     Publisher generic class. Also known as Producer.
     """
 
-    def __init__(self, service, routing_key):
+    def __init__(self, name, routing_key, service=None):
         """
         Messages will be published to `exchange`, using these different settings.
-        :param service: The publisher's service. Will also served as exchange, required.
-        :type service: str
+        :param name: The exchange name, required.
+        :type name: str
         :param routing_key: The key used to route the message.
         :type routing_key: None, str
+        :param service: The service's name. Used to get the configuration
+        :type service: None, str
         :rtype: None
         """
-        self.settings = getattr(farine.settings, service)
+        self.settings = getattr(farine.settings, service or name)
         self.routing_key = routing_key
-        self.exchange = Exchange(service, type=self.settings['type'],
+        self.exchange = Exchange(name, type=self.settings['type'],
                                  durable=self.settings['durable'],
                                  auto_delete=self.settings['auto_delete'],
                                  delivery_mode=self.settings['delivery_mode'])
