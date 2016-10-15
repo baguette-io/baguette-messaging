@@ -9,7 +9,7 @@ def test_import_services_error():
         farine.discovery.import_module('nonexistentmodule')
 
 def test_import_services_ok():
-    assert farine.discovery.import_module('test_discovery') == None
+    assert farine.discovery.import_module('farine.tests.testfarine') == None
 
 def test_start(channel, consumer_factory):
     consumer = consumer_factory()

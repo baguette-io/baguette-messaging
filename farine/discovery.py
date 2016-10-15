@@ -15,27 +15,21 @@ LOGGER = logging.getLogger(__name__)
 
 ENTRYPOINTS = [] #List of a tuple: (Entrypoint, callback, args, kwargs)
 
-def import_module(service, module=None):
+def import_module(module):
     """
     | Given a module `service`, try to import it.
     | It will autodiscovers all the entrypoints
     | and add them in `ENTRYPOINTS`.
 
-    :param service: The service's name to import.
-    :type service: str
     :param module: The module's name to import.
     :type module: str
     :rtype: None
     :raises ImportError: When the service/module to start is not found.
     """
     try:
-        if service:
-            sys.path.insert(0, '.')
-            __import__(service)
-        else:
-            __import__('{0}.service'.format(module))
+        __import__('{0}.service'.format(module))
     except ImportError:
-        LOGGER.error('No service/module found. Quit.')
+        LOGGER.error('No module/service found. Quit.')
         sys.exit(0)
 
 def start():
