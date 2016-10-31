@@ -9,7 +9,7 @@
 import inspect
 import logging
 import sys
-import gevent.pool
+import gevent.threadpool
 LOGGER = logging.getLogger(__name__)
 
 
@@ -39,7 +39,7 @@ def start():
 
     :rtype: None
     """
-    pool = gevent.pool.Pool()
+    pool = gevent.threadpool.ThreadPool(len(ENTRYPOINTS))
     for entrypoint, callback, args, kwargs in ENTRYPOINTS:
         #1. Retrieve the class which owns the callback
         for name, klass in inspect.getmembers(sys.modules[callback.__module__], inspect.isclass):
@@ -47,7 +47,7 @@ def start():
                 service_name = name.lower()
                 break
         #2.Start the entrypoint
-        callback  = getattr(klass(), callback.__name__)
+        callback = getattr(klass(), callback.__name__)
         kwargs.update({'service':service_name, 'callback':callback})
         LOGGER.info('Start service %s[%s].', service_name.capitalize(), callback.__name__)
         obj = entrypoint(*args, **kwargs)
