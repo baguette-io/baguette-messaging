@@ -60,7 +60,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :returns: All the consumers.
         :rtype: list.
         """
-        return [_Consumer(queues=[self.queue], callbacks=[self.main_callback])]
+        return [_Consumer(queues=[self.queue(channel)], callbacks=[self.main_callback])]
 
 
     @contextlib.contextmanager
