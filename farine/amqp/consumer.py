@@ -45,7 +45,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
                                  durable=self.settings['durable'],
                                  auto_declare=self.settings['auto_declare'],
                                  delivery_mode=self.settings['delivery_mode'])
-        self.queue = Queue(kwargs.get('queue_name', self.service),
+        self.queue = Queue(kwargs.get('routing_key', self.service),
                            exchange=self.exchange,
                            routing_key=kwargs['routing_key'],
                            durable=self.settings['durable'],
