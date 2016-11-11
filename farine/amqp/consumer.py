@@ -50,7 +50,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
                            routing_key=kwargs['routing_key'],
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
-        self.connection = Connection(self.settings['amqp_uri'])
+        self.connection = Connection(self.settings['amqp_uri'], heartbeat=5)
 
     def get_consumers(self, _Consumer, channel):
         """
