@@ -2,8 +2,6 @@
 import json
 from fixtures import *
 from farine.amqp import Consumer
-from pytest_dbfixtures import factories
-from pytest_dbfixtures.factories.rabbitmq_client import clear_rabbitmq
 
 def test_no_has_publish(publisher_factory):
     publisher = publisher_factory()
@@ -25,18 +23,18 @@ def test_message_sent(publisher_factory, queue_factory, rabbitmq_proc, rabbitmq)
     clear_rabbitmq(rabbitmq_proc, rabbitmq)
 
 def test_consumer_read(queue_factory, rabbitmq_proc, rabbitmq, consumer_factory, publisher_factory):
-    exc, queue = queue_factory('consume', 'publish', 'publish')
+    exc, queue = queue_factory('publish', 'publish', 'publish')
     consumer = consumer_factory()
     worker_consumer = Consumer(exchange='publish', routing_key='publish', service='consume', callback=consumer.consume_dummy)
     publisher_factory().publish_dummy({'test':'ok'})
     #
     worker_consumer.start(forever=False)
-    assert 'consume' in rabbitmq_proc.list_queues()
+    assert 'publish' in rabbitmq_proc.list_queues()
     assert consumer.messages_consumed == 1
     clear_rabbitmq(rabbitmq_proc, rabbitmq)
 
 def test_debug(queue_factory, rabbitmq_proc, rabbitmq, consumer_factory, publisher_factory):
-    exc, queue = queue_factory('consume', 'publish', 'publish')
+    exc, queue = queue_factory('publish', 'publish', 'publish')
     consumer = consumer_factory()
     worker_consumer = Consumer(exchange='publish', routing_key='publish', service='consume', callback=consumer.consume_dummy)
     publisher_factory().publish_dummy({'test':'ok', '__debug__':True})

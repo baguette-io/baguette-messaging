@@ -5,7 +5,7 @@ import farine.log
 import farine.settings
 import kombu.log
 from rabbitpy import Exchange, Queue, Message
-from pytest_dbfixtures.factories.rabbitmq_client import clear_rabbitmq
+from pytest_rabbitmq.factories.client import clear_rabbitmq
 
 @pytest.fixture(autouse=True)
 def settings():
