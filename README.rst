@@ -56,7 +56,7 @@ Configuration
 
 
 By default the configuration file is located in */etc/farine.ini*.
-You can override this path using the environment variable **FARINE_CONF_FILE**.
+You can override this path using the environment variable **FARINE_INI**.
 
 It must contains a **DEFAULT** section, then one by service(using the **lowercase class name**)
 

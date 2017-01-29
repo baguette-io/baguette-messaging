@@ -18,12 +18,12 @@ setup(name='baguette-messaging',
       ],
       extras_require={
           'testing': [
-              'mock==2.0.0',
-              'pytest==2.9.2',
-              'pytest-dbfixtures==0.14.3',
-              'pytest-cov==2.3.0',
-              'pylint==1.6.1',
-              'rabbitpy==0.26.2',
+              'mock',
+              'pytest',
+              'pytest-rabbitmq',
+              'pytest-cov',
+              'pylint',
+              'rabbitpy',
           ],
           'doc': [
               'Sphinx==1.4.4',
