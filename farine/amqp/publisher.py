@@ -43,7 +43,7 @@ class Publisher(object):
         """
         return Connection(self.settings['amqp_uri'])
 
-    def send(self, message):
+    def send(self, message, *args, **kwargs):
         """
         Send the the `message` to the broker.
 
@@ -51,6 +51,9 @@ class Publisher(object):
         :type message: object
         :rtype: None
         """
+        routing_key = kwargs.get('routing_key') or self.routing_key
+        correlation_id = kwargs.get('correlation_id', None)
+        exchange = kwargs.get('exchange', '')
         conn = self.get_connection()
         with connections[conn].acquire(block=True) as connection:
             self.exchange.maybe_bind(connection)
@@ -62,7 +65,8 @@ class Publisher(object):
                     exchange=self.exchange,
                     declare=[self.exchange],
                     serializer=self.settings['serializer'],
-                    routing_key=self.routing_key,
+                    routing_key=routing_key,
+                    correlation_id=correlation_id,
                     retry=self.settings['retry'],
                     delivery_mode=self.settings['delivery_mode'],
                     retry_policy=self.settings['retry_policy'])
