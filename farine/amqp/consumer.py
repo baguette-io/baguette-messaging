@@ -19,6 +19,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
     """
     Consumer generic class.
     """
+    prefetch_count = None
 
     def __init__(self, *args, **kwargs):#pylint:disable=unused-argument
         """
@@ -60,7 +61,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :returns: All the consumers.
         :rtype: list.
         """
-        return [_Consumer(queues=[self.queue(channel)], callbacks=[self.main_callback])]
+        return [_Consumer(queues=[self.queue(channel)], callbacks=[self.main_callback], prefetch_count=self.prefetch_count)]
 
 
     @contextlib.contextmanager
