@@ -10,7 +10,7 @@ import farine.amqp
 class Server(farine.amqp.Consumer):
     """
     RPC Server which is
-    an AMQP consumer.
+    an AMQP consumer then producer.
     """
     prefetch_count = 1
 
