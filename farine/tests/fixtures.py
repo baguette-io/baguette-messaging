@@ -1,5 +1,6 @@
 #-*- coding:utf-8 -*-
 import pytest
+import farine.rpc as rpc
 import farine.amqp
 import farine.log
 import farine.settings
@@ -31,6 +32,14 @@ class Consume(object):
         self.messages_consumed += 1
         return True
 
+
+class RPCServer(object):
+    @rpc.method()
+    def method(self, *args, **kwargs):
+        print args
+        print kwargs
+        return "ok"
+
 @pytest.fixture()
 def publisher_factory():
     return Publish
@@ -38,6 +47,10 @@ def publisher_factory():
 @pytest.fixture()
 def consumer_factory():
     return Consume
+
+@pytest.fixture()
+def rpc_server_factory():
+    return RPCServer
 
 @pytest.fixture()
 def channel(rabbitmq):

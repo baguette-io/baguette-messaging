@@ -2,7 +2,6 @@
 """
 RPC over AMQP implementation: server side.
 """
-
 from kombu import Connection, Producer, Queue
 
 import farine.amqp
@@ -18,7 +17,7 @@ class Server(farine.amqp.Consumer):
     def main_callback(self, body, message, publish):
         result = {}
         publish(result,
-                exchange="",
+                exchange=self.exchange,
                 routing_key=message.properties['reply_to'],
                 correlation_id=message.properties['correlation_id'],
         )

@@ -26,7 +26,6 @@ CONF_PATH = os.environ.get('FARINE_INI', '/etc/farine.ini')
 DEFAULTS = {
     'type': 'direct', #Exchange's type : `direct`, `topic`, `broadcast`
     'durable': True, #Does the exchange still exist after the AMQP server restart.
-    'auto_delete': False, #Does the exchange still exist when there is no more queues using it.
     'auto_declare': True, #Does the queue auto declare itself.
     'delivery_mode': 2, #How the messages are stored in the server. Transient=>1 or Persistent=>2
     'retry': True, #Retry sending message or declaring the exchange if the connection is lost.

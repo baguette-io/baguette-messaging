@@ -13,6 +13,8 @@ class Client(farine.amqp.Consumer):
     an AMQP publisher then consumer.
     """
     prefetch_count = 1
+    exclusive = True
+    auto_delete = True
 
     @farine.amqp.publish()
     def call(self, message, publish):

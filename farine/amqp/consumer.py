@@ -20,6 +20,8 @@ class Consumer(ConsumerMixin, EntryPointMixin):
     Consumer generic class.
     """
     prefetch_count = None
+    exclusive = False
+    auto_delete = False
 
     def __init__(self, *args, **kwargs):#pylint:disable=unused-argument
         """
@@ -38,6 +40,8 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :rtype: None
         """
         self.service = kwargs.pop('service')
+        kwargs.setdefault('exchange', self.service)
+        kwargs.setdefault('routing_key', self.service)
         self.settings = getattr(farine.settings, self.service)
         self.callback = kwargs.pop('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
@@ -46,9 +50,11 @@ class Consumer(ConsumerMixin, EntryPointMixin):
                                  durable=self.settings['durable'],
                                  auto_declare=self.settings['auto_declare'],
                                  delivery_mode=self.settings['delivery_mode'])
-        self.queue = Queue(kwargs.get('routing_key', self.service),
+        self.queue = Queue(kwargs['routing_key'],
                            exchange=self.exchange,
                            routing_key=kwargs['routing_key'],
+                           exclusive=self.exclusive,
+                           auto_delete=self.auto_delete,
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
         self.connection = Connection(self.settings['amqp_uri'], heartbeat=5)

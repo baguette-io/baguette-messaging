@@ -12,7 +12,7 @@ setup(name='baguette-messaging',
       author_email='dev@baguette.io',
       packages=find_packages(),
       install_requires=[
-          'kombu==3.0.35',
+          'kombu==4.0.2',
           'gevent==1.1.1',
           'PyYAML==3.11',
       ],
