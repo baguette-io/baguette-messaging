@@ -16,6 +16,7 @@ class Publisher(object):
     """
     Publisher generic class. Also known as Producer.
     """
+    auto_delete = False
 
     def __init__(self, name, routing_key, service=None):
         """
@@ -32,7 +33,7 @@ class Publisher(object):
         self.routing_key = routing_key
         self.exchange = Exchange(name, type=self.settings['type'],
                                  durable=self.settings['durable'],
-                                 auto_delete=self.settings['auto_delete'],
+                                 auto_delete=self.settings.get('auto_delete', self.auto_delete),
                                  delivery_mode=self.settings['delivery_mode'])
     def get_connection(self):
         """

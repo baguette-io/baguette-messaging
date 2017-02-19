@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 import json
 from fixtures import *
-from farine.rpc import Server
+import farine.rpc as rpc
 
 def test_rpc_call(rpc_server_factory, rabbitmq_proc, rabbitmq):
     """
@@ -9,4 +9,5 @@ def test_rpc_call(rpc_server_factory, rabbitmq_proc, rabbitmq):
     its message is processed.
     """
     server = rpc_server_factory()
-    worker_server = Server(service='rpcserver', callback=server.method)
+    worker_server = rpc.Server(service='server', callback=server.rpc_method)
+    worker_server.start(forever=False)

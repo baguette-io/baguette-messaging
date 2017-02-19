@@ -53,8 +53,8 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         self.queue = Queue(kwargs['routing_key'],
                            exchange=self.exchange,
                            routing_key=kwargs['routing_key'],
-                           exclusive=self.exclusive,
-                           auto_delete=self.auto_delete,
+                           exclusive=self.settings.get('exclusive', self.exclusive),
+                           auto_delete=self.settings.get('auto_delete', self.auto_delete),
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
         self.connection = Connection(self.settings['amqp_uri'], heartbeat=5)

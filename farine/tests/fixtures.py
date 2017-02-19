@@ -1,8 +1,8 @@
 #-*- coding:utf-8 -*-
 import pytest
-import farine.rpc as rpc
 import farine.amqp
 import farine.log
+import farine.rpc as rpc
 import farine.settings
 import kombu.log
 from rabbitpy import Exchange, Queue, Message
@@ -32,10 +32,9 @@ class Consume(object):
         self.messages_consumed += 1
         return True
 
-
-class RPCServer(object):
+class Server(object):
     @rpc.method()
-    def method(self, *args, **kwargs):
+    def rpc_method(self, *args, **kwargs):
         print args
         print kwargs
         return "ok"
@@ -50,7 +49,7 @@ def consumer_factory():
 
 @pytest.fixture()
 def rpc_server_factory():
-    return RPCServer
+    return Server
 
 @pytest.fixture()
 def channel(rabbitmq):
