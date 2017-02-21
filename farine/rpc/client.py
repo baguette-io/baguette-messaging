@@ -16,14 +16,34 @@ class Client(farine.amqp.Consumer):
     exclusive = True
     auto_delete = True
 
-    @farine.amqp.publish()
-    def call(self, message, publish):
-        publish(result,
-                routing_key=message.properties['reply_to'],
-                correlation_id=uuid.uuid4().hex
-        )
-        self.start(False)
+    def __getattr__(self, method, *args, **kwargs):
+        print '__getattr__'
+        print method
+        print args
+        print kwargs
+        return self.__call__(method, *args, **kwargs)
 
-    def main_callback(self, body, message, publish):
+    def __call__(self, method, *args, **kwargs):
+        print '__call__'
+        print 'method : {}'.format(method)
+        print args
+        print kwargs
+        self.correlation_id = uuid.uuid4().hex
+        message = {'method' : method,
+                   'args': args,
+                   'kwargs': kwargs
+        }
+        publish = farine.amqp.Publisher(self.service, self.routing_key)
+        publish(message,
+                correlation_id=self.correlation_id,
+                reply_to=self.queue
+        )
+        self.start(forever=False)
+
+    def __callback__(self, body, message, publish):
+        print 'CLIENT.CALLBACK'
+        print body
+        print message
         result = {}
         message.ack()
+        return 

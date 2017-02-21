@@ -35,9 +35,18 @@ class Consume(object):
 class Server(object):
     @rpc.method()
     def rpc_method(self, *args, **kwargs):
+        print 'rpc_method'
         print args
         print kwargs
         return "ok"
+
+class Client(object):
+    @rpc.client('server')
+    def call(self, rpc):
+        print 'call'
+        result = rpc.rpc_method('un', deux='deux')
+        print 'result : {}'.format(result)
+        return result
 
 @pytest.fixture()
 def publisher_factory():
@@ -50,6 +59,10 @@ def consumer_factory():
 @pytest.fixture()
 def rpc_server_factory():
     return Server
+
+@pytest.fixture()
+def rpc_client_factory():
+    return Client
 
 @pytest.fixture()
 def channel(rabbitmq):

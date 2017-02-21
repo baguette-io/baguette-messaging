@@ -9,6 +9,7 @@ import contextlib
 import cProfile
 import pstats
 import StringIO
+import uuid
 from kombu import Connection, Exchange, Queue
 from kombu.pools import producers
 from kombu.mixins import ConsumerMixin
@@ -41,18 +42,19 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         """
         self.service = kwargs.pop('service')
         kwargs.setdefault('exchange', self.service)
-        kwargs.setdefault('routing_key', self.service)
+        self.routing_key = kwargs.get('routing_key') or self.service
+        self.queue_name = self.routing_key if not self.exclusive else uuid.uuid4().hex
         self.settings = getattr(farine.settings, self.service)
-        self.callback = kwargs.pop('callback')
+        self.callback = self.callback if hasattr(self, 'callback') else kwargs.get('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
         self.exchange = Exchange(kwargs.pop('exchange'),
                                  type=exchange_type,
                                  durable=self.settings['durable'],
                                  auto_declare=self.settings['auto_declare'],
                                  delivery_mode=self.settings['delivery_mode'])
-        self.queue = Queue(kwargs['routing_key'],
+        self.queue = Queue(self.queue_name,
                            exchange=self.exchange,
-                           routing_key=kwargs['routing_key'],
+                           routing_key=self.routing_key,
                            exclusive=self.settings.get('exclusive', self.exclusive),
                            auto_delete=self.settings.get('auto_delete', self.auto_delete),
                            durable=self.settings['durable'],

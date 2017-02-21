@@ -16,9 +16,9 @@ def client(service, exchange=None, routing_key=None):
         def subwrapper(self, *args, **kwargs):
             _exchange = exchange or service
             _routing_key = routing_key or service
-            if not hasattr(self, 'publish'):
-                publish = Client(_exchange, _routing_key, service=service)
-            return method(self, publish, *args, **kwargs)
+            if not hasattr(self, 'rpc'):
+                rpc = Client(_exchange, _routing_key, service=service)
+            return method(self, rpc, *args, **kwargs)
         return subwrapper
     return wrapper
 
