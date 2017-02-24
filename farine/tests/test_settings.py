@@ -9,7 +9,6 @@ def test_defaults():
     ##
     assert farine.settings.publish['type'] == 'direct'
     assert farine.settings.publish['durable'] == True
-    assert farine.settings.publish['auto_delete'] == False
     assert farine.settings.publish['delivery_mode'] == 2
     assert farine.settings.publish['retry'] == True
     assert farine.settings.publish['retry_policy'] == {'max_retries': 5}
