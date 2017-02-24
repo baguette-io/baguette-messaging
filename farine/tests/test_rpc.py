@@ -4,7 +4,7 @@ import socket
 from fixtures import *
 import farine.rpc as rpc
 
-def test_rpc_decorator_call(rpc_server_factory, rpc_client_factory, rabbitmq_proc, rabbitmq):
+def test_rpc_decorator_call_ok(rpc_server_factory, rpc_client_factory):
     """
     Test that when a client call the RPC server,
     its message is processed.
@@ -22,7 +22,7 @@ def test_rpc_decorator_call_timeout(rpc_client_factory, rabbitmq_proc, rabbitmq)
     with pytest.raises(socket.timeout):
         client.call()
 
-def test_rpc_class_call(rpc_server_factory, rabbitmq_proc, rabbitmq):
+def test_rpc_class_call_ok(rpc_server_factory):
     """
     Test that rpc.client.Client() works like rpc.client() decorator:
     its message is processed.

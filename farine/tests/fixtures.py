@@ -1,5 +1,6 @@
 #-*- coding:utf-8 -*-
 import multiprocessing
+import time
 import pytest
 import farine.amqp
 import farine.log
@@ -59,13 +60,17 @@ def _rpc_server():
     rpc.Server(service='server', callback_name='something', callback=server.something).start()
 
 @pytest.fixture()
-def rpc_server_factory(request):
+def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
     def factory():
         process = multiprocessing.Process(
             target=_rpc_server,
         )
-        request.addfinalizer(process.terminate)
+        def cleanup():
+            process.terminate()
+            clear_rabbitmq(rabbitmq_proc, rabbitmq)
+        request.addfinalizer(cleanup)
         process.start()
+        time.sleep(5)
         return process
     return factory
 
