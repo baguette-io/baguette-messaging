@@ -23,6 +23,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
     prefetch_count = None
     exclusive = False
     auto_delete = False
+    auto_generated = False
 
     def __init__(self, *args, **kwargs):#pylint:disable=unused-argument
         """
@@ -42,10 +43,13 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         """
         self.service = kwargs.pop('service')
         kwargs.setdefault('exchange', self.service)
-        self.routing_key = kwargs.get('routing_key') or self.service
-        self.queue_name = self.routing_key if not self.exclusive else uuid.uuid4().hex
+        if self.auto_generated:
+            self.queue_name = self.routing_key = uuid.uuid4().hex
+        else:
+            self.queue_name = self.routing_key = kwargs.get('routing_key') or self.service
         self.settings = getattr(farine.settings, self.service)
-        self.callback = self.callback if hasattr(self, 'callback') else kwargs.get('callback')
+        if not self.callback:
+            self.callback = kwargs.get('callback')
         exchange_type = kwargs.pop('exchange_type', 'direct')
         self.exchange = Exchange(kwargs.pop('exchange'),
                                  type=exchange_type,
@@ -122,12 +126,19 @@ class Consumer(ConsumerMixin, EntryPointMixin):
 
         :param forever: If set, the consumer listens forever. Default to `True`.
         :type forever: bool
+        :param timeout: If set, the consumer waits the specified seconds before quitting.
+        :type timeout: None, int
         :rtype: None
+        :raises socket.timeout: when no message has been received since `timeout`.
         """
         forever = kwargs.get('forever', True)
+        timeout = kwargs.get('timeout', None)
         if forever:
-            return self.run()
-        next((self.consume(limit=1)), None)
+            return self.run(timeout=timeout)
+        elif timeout:
+            next((self.consume(timeout=timeout)), None)
+        else:
+            next((self.consume(limit=1, timeout=timeout)), None)
 
     def stop(self):
         """

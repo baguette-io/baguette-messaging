@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+import multiprocessing
 import pytest
 import farine.amqp
 import farine.log
@@ -32,22 +33,6 @@ class Consume(object):
         self.messages_consumed += 1
         return True
 
-class Server(object):
-    @rpc.method()
-    def rpc_method(self, *args, **kwargs):
-        print 'rpc_method'
-        print args
-        print kwargs
-        return "ok"
-
-class Client(object):
-    @rpc.client('server')
-    def call(self, rpc):
-        print 'call'
-        result = rpc.rpc_method('un', deux='deux')
-        print 'result : {}'.format(result)
-        return result
-
 @pytest.fixture()
 def publisher_factory():
     return Publish
@@ -56,9 +41,33 @@ def publisher_factory():
 def consumer_factory():
     return Consume
 
+class Server(object):
+    @rpc.method()
+    def something(self, *args, **kwargs):
+        return True
+
+class Client(object):
+    @rpc.client('server')
+    def call(self, rpc):
+        result = rpc.something('un', deux='deux')
+        return result
+
 @pytest.fixture()
-def rpc_server_factory():
-    return Server
+def _rpc_server():
+    server = Server()
+    farine.settings.load()
+    rpc.Server(service='server', routing_key='server__something', callback=server.something).start()
+
+@pytest.fixture()
+def rpc_server_factory(request):
+    def factory():
+        process = multiprocessing.Process(
+            target=_rpc_server,
+        )
+        request.addfinalizer(process.terminate)
+        process.start()
+        return process
+    return factory
 
 @pytest.fixture()
 def rpc_client_factory():

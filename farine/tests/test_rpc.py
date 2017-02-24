@@ -10,6 +10,4 @@ def test_rpc_call(rpc_server_factory, rpc_client_factory, rabbitmq_proc, rabbitm
     """
     server = rpc_server_factory()
     client = rpc_client_factory()
-    worker_server = rpc.Server(service='server', callback=server.rpc_method)
-    worker_server.start(forever=False)
-    client.call()
+    assert client.call() == True

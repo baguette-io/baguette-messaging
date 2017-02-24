@@ -15,35 +15,27 @@ class Client(farine.amqp.Consumer):
     prefetch_count = 1
     exclusive = True
     auto_delete = True
+    auto_generated = True
+    timeout = 10
 
     def __getattr__(self, method, *args, **kwargs):
-        print '__getattr__'
-        print method
-        print args
-        print kwargs
-        return self.__call__(method, *args, **kwargs)
+        self.method = method
+        return self.__rpc__
 
-    def __call__(self, method, *args, **kwargs):
-        print '__call__'
-        print 'method : {}'.format(method)
-        print args
-        print kwargs
+    def __rpc__(self, *args, **kwargs):
+        self.response = None
         self.correlation_id = uuid.uuid4().hex
-        message = {'method' : method,
-                   'args': args,
+        message = {'args': args,
                    'kwargs': kwargs
         }
-        publish = farine.amqp.Publisher(self.service, self.routing_key)
-        publish(message,
-                correlation_id=self.correlation_id,
-                reply_to=self.queue
+        publish = farine.amqp.Publisher(self.service, '{}__{}'.format(self.service, self.method))
+        publish.send(message,
+            correlation_id=self.correlation_id,
+            reply_to=self.queue.name
         )
-        self.start(forever=False)
+        self.start(forever=False, timeout=self.timeout)
+        return self.response
 
-    def __callback__(self, body, message, publish):
-        print 'CLIENT.CALLBACK'
-        print body
-        print message
-        result = {}
+    def callback(self, result, message):
         message.ack()
-        return 
+        self.response = result

@@ -14,11 +14,13 @@ class Server(farine.amqp.Consumer):
     prefetch_count = 1
 
     @farine.amqp.publish()
-    def main_callback(self, body, message, publish):
-        result = {}
+    def main_callback(self, publish, result, message):
+        message.ack()
+        try:
+            result = self.callback(result['args'], result['kwargs'])
+        except Exception as e:
+            result = {'__except__': str(e)}
         publish(result,
-                exchange=self.exchange,
                 routing_key=message.properties['reply_to'],
                 correlation_id=message.properties['correlation_id'],
         )
-        message.ack()
