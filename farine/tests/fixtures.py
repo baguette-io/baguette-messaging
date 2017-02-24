@@ -4,6 +4,7 @@ import time
 import pytest
 import farine.amqp
 import farine.log
+import farine.rpc
 import farine.rpc as rpc
 import farine.settings
 import kombu.log
@@ -47,23 +48,33 @@ class Server(object):
     def something(self, *args, **kwargs):
         return True
 
+    def exception(self, *args, **kwargs):
+        return i_am_broken
+
 class Client(object):
     @rpc.client('server')
     def call(self, rpc):
         result = rpc.something('un', deux='deux')
         return result
 
-@pytest.fixture()
-def _rpc_server():
+    @rpc.client('server')
+    def call_exception(self, rpc):
+        try:
+            rpc.exception()
+            return True
+        except farine.rpc.RPCError:
+            return False
+
+def _rpc_server(callback_name):
     server = Server()
     farine.settings.load()
-    rpc.Server(service='server', callback_name='something', callback=server.something).start()
+    rpc.Server(service='server', callback_name=callback_name, callback=getattr(server, callback_name)).start()
 
 @pytest.fixture()
 def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
-    def factory():
+    def factory(callback_name):
         process = multiprocessing.Process(
-            target=_rpc_server,
+            target=lambda:_rpc_server(callback_name),
         )
         def cleanup():
             process.terminate()

@@ -7,6 +7,11 @@ from kombu import Connection, Producer, Queue
 
 import farine.amqp
 
+class RPCError(Exception):
+    """
+    Generic RPC Exception.
+    """
+
 class Client(farine.amqp.Consumer):
     """
     RPC Client which is
@@ -26,7 +31,7 @@ class Client(farine.amqp.Consumer):
         return self.__rpc__
 
     def __rpc__(self, *args, **kwargs):
-        self.response = None
+        self.response = {'exception': None, 'body': None}
         self.correlation_id = uuid.uuid4().hex
         message = {'args': args,
                    'kwargs': kwargs
@@ -37,8 +42,11 @@ class Client(farine.amqp.Consumer):
             reply_to=self.queue.name
         )
         self.start(forever=False, timeout=self.timeout)
-        return self.response
+        if self.response['exception']:
+            raise RPCError(self.response['exception'])
+        return self.response['body']
 
     def callback(self, result, message):
         message.ack()
-        self.response = result
+        self.response['body'] = result
+        self.response['exception'] = result.get('__except__', None)
