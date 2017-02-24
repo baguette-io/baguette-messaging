@@ -63,7 +63,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
                            auto_delete=self.settings.get('auto_delete', self.auto_delete),
                            durable=self.settings['durable'],
                            auto_declare=self.settings['auto_declare'])
-        self.connection = Connection(self.settings['amqp_uri'], heartbeat=5)
+        self.connection = Connection(self.settings['amqp_uri'])
 
     def get_consumers(self, _Consumer, channel):
         """
