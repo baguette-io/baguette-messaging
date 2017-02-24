@@ -24,6 +24,7 @@ class Consumer(ConsumerMixin, EntryPointMixin):
     exclusive = False
     auto_delete = False
     auto_generated = False
+    routing_key_format = None
 
     def __init__(self, *args, **kwargs):#pylint:disable=unused-argument
         """
@@ -41,10 +42,12 @@ class Consumer(ConsumerMixin, EntryPointMixin):
         :type callback: object
         :rtype: None
         """
-        self.service = kwargs.pop('service')
+        self.service = kwargs.get('service')
         kwargs.setdefault('exchange', self.service)
         if self.auto_generated:
             self.queue_name = self.routing_key = uuid.uuid4().hex
+        elif self.routing_key_format:
+            self.queue_name = self.routing_key = self.routing_key_format.format(**kwargs)
         else:
             self.queue_name = self.routing_key = kwargs.get('routing_key') or self.service
         self.settings = getattr(farine.settings, self.service)

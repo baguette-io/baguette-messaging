@@ -22,9 +22,6 @@ def client(service):
 
 def method(*args, **kwargs):
     def wrapper(_method):
-        print 'WRAPPPER'
-        print _method.__dict__
-        print _method.__name__
         farine.discovery.ENTRYPOINTS.append((Server, _method, args, kwargs))
         def subwrapper(self, *args, **kwargs):
             LOGGER.info('Received message : %s %s , call %s.', args, kwargs, _method.__name__)

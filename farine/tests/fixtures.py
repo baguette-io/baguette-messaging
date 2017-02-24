@@ -56,7 +56,7 @@ class Client(object):
 def _rpc_server():
     server = Server()
     farine.settings.load()
-    rpc.Server(service='server', routing_key='server__something', callback=server.something).start()
+    rpc.Server(service='server', callback_name='something', callback=server.something).start()
 
 @pytest.fixture()
 def rpc_server_factory(request):

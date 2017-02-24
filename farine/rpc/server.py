@@ -12,6 +12,7 @@ class Server(farine.amqp.Consumer):
     an AMQP consumer then producer.
     """
     prefetch_count = 1
+    routing_key_format = '{service}__{callback_name}'
 
     @farine.amqp.publish()
     def main_callback(self, publish, result, message):

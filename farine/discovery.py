@@ -48,7 +48,7 @@ def start():
                 break
         #2.Start the entrypoint
         callback = getattr(klass(), callback.__name__)
-        kwargs.update({'service':service_name, 'callback':callback})
+        kwargs.update({'service':service_name, 'callback':callback, 'callback_name': callback.__name__})
         LOGGER.info('Start service %s[%s].', service_name.capitalize(), callback.__name__)
         obj = entrypoint(*args, **kwargs)
         pool.spawn(obj.start, *args, **kwargs)
