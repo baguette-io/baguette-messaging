@@ -15,7 +15,7 @@ def client(service):
     def wrapper(_method):
         def subwrapper(self, *args, **kwargs):
             if not hasattr(self, 'rpc'):
-                rpc = Client(service, service, service=service)
+                rpc = Client(service)
             return _method(self, rpc, *args, **kwargs)
         return subwrapper
     return wrapper
