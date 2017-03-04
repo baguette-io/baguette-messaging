@@ -6,13 +6,16 @@ How it works
 ============
 
 
+AMQP
+----
+
 .. code:: python
 
 	import farine.amqp
 	
 	class Publish(object):
 	
-	    @farine.amqp.publish()
+	    @farine.amqp.publish(exchange='consume', routing_key='routing_key')
 	    def publish_dummy(self, publish):
 	        self.publish({'result':0})
 	
@@ -28,32 +31,40 @@ How it works
 	        self.publish(body)
  
 
-
 In this code we declare one service:
 
 * consume : Read messages
 * publish : is not a service, as it doesn't have an event loop.
 
 
-Publisher
-`````````
-
-To declare a publisher, just put the decorator **@farine.amqp.publish** on the top of your method,
-then use **publish(message)** inside it to send the message.
-It will auto declare and send it to the **lowercase class name** exchange with also **lowercase class name** as routing_key.
-If you want to publish to another exchange/with another routing key add the **exchange**/**routing_key** parameter in the decorator.
+RPC
+---
 
 
-Consumer
-````````
+.. code:: python
 
-To declare a consumer, just put the decorator **@farine.amqp.consume(exchange='publish', routing_key='routing_key')**
-on the top of your method, which must contains two arguments: **body** and **message**.
+	import farine.rpc
+	
+	class Server(object):
+	
+	    @farine.rpc.method()
+	    def call_dummy(self, *args, **kwargs):
+	        return True
+	
+	class Client(object):
+	
+	    @farine.rpc.client('server')
+	    def dummy(self, rpc)
+	        return rpc.call_dummy()
+
+In this code we declare two services:
+
+* server : Wait for a call(consumer), and answer(publisher).
+* client : Send a call(publisher), and wait for an anwser(consumer).
 
 
 Configuration
 =============
-
 
 By default the configuration file is located in */etc/farine.ini*.
 You can override this path using the environment variable **FARINE_INI**.
@@ -83,7 +94,7 @@ To launch a service, just run:
 	farine --start=mymodule
 
 
-It will inspect the module for services, and launch the 'bootable' ones (the consumers).
+It will try to import *mymodule.service* and launch it.
 
 Debug
 =====
