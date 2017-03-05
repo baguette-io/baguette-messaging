@@ -18,7 +18,7 @@ class Server(farine.amqp.Consumer):
     def main_callback(self, publish, result, message):
         message.ack()
         try:
-            result = self.callback(result['args'], result['kwargs'])
+            result = self.callback(*result['args'], **result['kwargs'])
         except Exception as e:
             result = {'__except__': str(e)}
         publish(result,

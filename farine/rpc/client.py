@@ -31,7 +31,7 @@ class Client(farine.amqp.Consumer):
         return self.__rpc__
 
     def __rpc__(self, *args, **kwargs):
-        self.response = {'exception': None, 'body': None}
+        self.response = {'__except__': None, 'body': None}
         self.correlation_id = uuid.uuid4().hex
         message = {'args': args,
                    'kwargs': kwargs
@@ -42,11 +42,11 @@ class Client(farine.amqp.Consumer):
             reply_to=self.queue.name
         )
         self.start(forever=False, timeout=self.timeout)
-        if self.response['exception']:
-            raise RPCError(self.response['exception'])
+        if self.response['__except__']:
+            raise RPCError(self.response['__except__'])
         return self.response['body']
 
     def callback(self, result, message):
         message.ack()
         self.response['body'] = result
-        self.response['exception'] = result.get('__except__', None)
+        self.response['__except__'] = result.get('__except__', None)
