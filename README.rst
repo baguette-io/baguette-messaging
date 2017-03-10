@@ -3,7 +3,7 @@ baguette-messaging
 ==================
 
 Tiny Framework to build micro services.
-Currently only support **amqp** based micro service.
+Currently only support **amqp** based micro services.
 
 
 How it works
@@ -76,7 +76,7 @@ You can override this path using the environment variable **FARINE_INI**.
 It must contains a **DEFAULT** section, then one by service(using the **lowercase class name**)
 
 Example
-```````
+-------
 
 ::
 
