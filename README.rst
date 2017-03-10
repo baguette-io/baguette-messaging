@@ -1,3 +1,7 @@
+==================
+baguette-messaging
+==================
+
 Tiny Framework to build micro services.
 Currently only support **amqp** based micro service.
 
