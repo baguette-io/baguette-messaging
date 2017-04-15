@@ -11,11 +11,11 @@ from farine.rpc.server import Server
 
 LOGGER = logging.getLogger(__name__)
 
-def client(service):
+def client(service, timeout=60):
     def wrapper(_method):
         def subwrapper(self, *args, **kwargs):
             if not hasattr(self, 'rpc'):
-                rpc = Client(service)
+                rpc = Client(service, timeout)
             return _method(self, rpc, *args, **kwargs)
         return subwrapper
     return wrapper

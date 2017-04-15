@@ -21,10 +21,10 @@ class Client(farine.amqp.Consumer):
     exclusive = True
     auto_delete = True
     auto_generated = True
-    timeout = 120
 
-    def __init__(self, service):
+    def __init__(self, service, timeout=None):
         super(Client, self).__init__(service, service, service=service)
+        self.timeout = timeout
 
     def __getattr__(self, method, *args, **kwargs):
         self.method = method
