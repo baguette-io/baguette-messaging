@@ -45,7 +45,7 @@ def test_rpc_class_call_timeout(rabbitmq_proc, rabbitmq):
     Test that rpc.client.Client() works like rpc.client() decorator:
     its timeouts.
     """
-    client = rpc.Client('server')
+    client = rpc.Client('server', 10)
     with pytest.raises(socket.timeout):
         client.call()
 

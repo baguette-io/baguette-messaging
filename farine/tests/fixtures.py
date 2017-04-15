@@ -52,12 +52,12 @@ class Server(object):
         return i_am_broken
 
 class Client(object):
-    @rpc.client('server')
+    @rpc.client('server', 10)
     def call(self, rpc):
         result = rpc.something('un', deux='deux')
         return result
 
-    @rpc.client('server')
+    @rpc.client('server', 10)
     def call_exception(self, rpc):
         try:
             rpc.exception()
