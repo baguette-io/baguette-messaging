@@ -41,15 +41,16 @@ def start():
     """
     pool = gevent.threadpool.ThreadPool(len(ENTRYPOINTS))
     for entrypoint, callback, args, kwargs in ENTRYPOINTS:
+        cname = callback.__name__
         #1. Retrieve the class which owns the callback
         for name, klass in inspect.getmembers(sys.modules[callback.__module__], inspect.isclass):
-            if hasattr(klass, callback.__name__):
+            if hasattr(klass, cname):
                 service_name = name.lower()
                 break
         #2.Start the entrypoint
-        callback = getattr(klass(), callback.__name__)
-        kwargs.update({'service':service_name, 'callback':callback, 'callback_name': callback.__name__})
-        LOGGER.info('Start service %s[%s].', service_name.capitalize(), callback.__name__)
+        callback = getattr(klass(), cname)
+        kwargs.update({'service':service_name, 'callback':callback, 'callback_name': cname})
+        LOGGER.info('Start service %s[%s].', service_name.capitalize(), cname)
         obj = entrypoint(*args, **kwargs)
         pool.spawn(obj.start, *args, **kwargs)
     pool.join()
