@@ -4,6 +4,7 @@ RPC over AMQP implementation: server side.
 """
 from kombu import Connection, Producer, Queue
 
+import traceback
 import farine.amqp
 
 class Server(farine.amqp.Consumer):
@@ -19,8 +20,8 @@ class Server(farine.amqp.Consumer):
         message.ack()
         try:
             result = self.callback(*result['args'], **result['kwargs'])
-        except Exception as e:
-            result = {'__except__': str(e)}
+        except:
+            result = {'__except__': traceback.format_exc()}
         publish(result,
                 routing_key=message.properties['reply_to'],
                 correlation_id=message.properties['correlation_id'],
