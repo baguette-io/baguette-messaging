@@ -48,8 +48,14 @@ class Server(object):
     def something(self, *args, **kwargs):
         return True
 
+    @rpc.method()
     def exception(self, *args, **kwargs):
         return i_am_broken
+
+    @rpc.method()
+    def slow(self, *args, **kwargs):
+        time.sleep(60)
+        return True
 
 class Client(object):
     @rpc.client('server', 10)

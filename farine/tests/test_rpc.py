@@ -1,6 +1,5 @@
 #-*- coding:utf-8 -*-
 import json
-import socket
 from fixtures import *
 import farine.rpc as rpc
 
@@ -19,7 +18,7 @@ def test_rpc_decorator_call_timeout(rpc_client_factory, rabbitmq_proc, rabbitmq)
     it timeouts.
     """
     client = rpc_client_factory()
-    with pytest.raises(socket.timeout):
+    with pytest.raises(rpc.RPCError):
         client.call()
 
 def test_rpc_decorator_call_exception(rpc_server_factory, rpc_client_factory):
@@ -45,9 +44,21 @@ def test_rpc_class_call_timeout(rabbitmq_proc, rabbitmq):
     Test that rpc.client.Client() works like rpc.client() decorator:
     its timeouts.
     """
-    client = rpc.Client('server', 10)
-    with pytest.raises(socket.timeout):
+    client = rpc.Client('server', 2)
+    with pytest.raises(rpc.RPCError) as err:
         client.call()
+    assert 'timeout' in err.value.message
+
+def test_rpc_long_call(rpc_server_factory):
+    """
+    Test that rpc.client.Client() timeouts
+    then the server received the message, but hasn't reply yet.
+    """
+    client = rpc.Client('server', 10)
+    with pytest.raises(rpc.RPCError) as err:
+        client.slow()
+    assert 'timeout' in err.value.message
+
 
 def test_rpc_class_call_exception(rpc_server_factory):
     """

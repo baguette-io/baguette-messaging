@@ -3,6 +3,7 @@
 RPC over AMQP implementation: client side.
 """
 import uuid
+import traceback
 from kombu import Connection, Producer, Queue
 
 import farine.amqp
@@ -41,7 +42,11 @@ class Client(farine.amqp.Consumer):
             correlation_id=self.correlation_id,
             reply_to=self.queue.name
         )
-        self.start(forever=False, timeout=self.timeout)
+        try:
+            self.start(forever=False, timeout=self.timeout)
+        except:
+            self.response['__except__'] = traceback.format_exc()
+
         if self.response['__except__']:
             raise RPCError(self.response['__except__'])
         return self.response['body']
