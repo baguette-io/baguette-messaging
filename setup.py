@@ -15,6 +15,8 @@ setup(name='baguette-messaging',
           'kombu==4.0.2',
           'gevent==1.1.1',
           'PyYAML==3.11',
+          'requests==2.14.2',
+          'sseclient-py==1.5',
       ],
       extras_require={
           'testing': [

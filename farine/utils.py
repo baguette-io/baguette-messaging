@@ -36,7 +36,7 @@ class Timeout(object):
         :param seconds: the timeout must be specified in seconds.
         :type seconds: int
         """
-        self.seconds = seconds
+        self.seconds = int(seconds) if seconds else None
 
     def handler(self, signum, frame):
         """

@@ -6,6 +6,7 @@ import farine.amqp
 import farine.log
 import farine.rpc
 import farine.rpc as rpc
+import farine.stream as stream
 import farine.settings
 import kombu.log
 from rabbitpy import Exchange, Queue, Message
@@ -91,24 +92,15 @@ def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
         return process
     return factory
 
-class HTTPClient(object):
+class SSEClient(object):
 
-    @stream.http('server', 10)
-    def call(self, rpc):
-        result = rpc.something('un', deux='deux')
-        return result
-
-    @rpc.client('server', 10)
-    def call_exception(self, rpc):
-        try:
-            rpc.exception()
-            return True
-        except farine.rpc.RPCError:
-            return False
+    @stream.http()
+    def event(self, data):
+        return data
 
 @pytest.fixture()
-def http_stream_client_factory():
-    return HttpClient
+def sse_client_factory():
+    return SSEClient
 
 @pytest.fixture()
 def rpc_client_factory():

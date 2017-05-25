@@ -6,7 +6,7 @@ import farine.settings
 import farine.utils as utils
 from farine.mixins import EntryPointMixin
 
-class HTTPStreamConsumer(EntryPointMixin):
+class SSEConsumer(EntryPointMixin):
     """
     HTTP SSE consumer.
     """
