@@ -91,6 +91,25 @@ def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
         return process
     return factory
 
+class HTTPClient(object):
+
+    @stream.http('server', 10)
+    def call(self, rpc):
+        result = rpc.something('un', deux='deux')
+        return result
+
+    @rpc.client('server', 10)
+    def call_exception(self, rpc):
+        try:
+            rpc.exception()
+            return True
+        except farine.rpc.RPCError:
+            return False
+
+@pytest.fixture()
+def http_stream_client_factory():
+    return HttpClient
+
 @pytest.fixture()
 def rpc_client_factory():
     return Client
