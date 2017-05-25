@@ -6,7 +6,7 @@ Module containing the class decorators:
 """
 import logging
 import farine.discovery
-from farine.rpc.client import Client, RPCError
+from farine.rpc.client import Client
 from farine.rpc.server import Server
 
 LOGGER = logging.getLogger(__name__)

@@ -1,4 +1,8 @@
 #-*- coding:utf-8 -*-
+"""
+Module containing a consumer
+to a stream HTTP Connection.
+"""
 import contextlib
 import requests
 import sseclient
@@ -23,13 +27,14 @@ class SSEConsumer(EntryPointMixin):
         self.service = kwargs.get('service')
         self.headers = kwargs.get('headers', {'Accept':'text/event-stream'})
         self.settings = getattr(farine.settings, self.service)
-        self.endpoint = self.settings['endpoint'] or kwargs.get('endpoint')
+        self.endpoint = kwargs.get('endpoint', self.settings['endpoint'])
         self.stream = None
 
 
     @contextlib.contextmanager
-    def debug(self, body, message):#pylint:disable=arguments-differ,unused-argument
+    def debug(self, data):#pylint:disable=arguments-differ,unused-argument
         """
+        Add a debug method.
         """
         yield
 
@@ -47,11 +52,15 @@ class SSEConsumer(EntryPointMixin):
         client = sseclient.SSEClient(self.stream)
         while True:
             with utils.Timeout(timeout):
-                event = next(client.events)
-            self.main_callback(event.data)
-            counter += 1
-            if limit and counter >= limit:
-                return
+                try:
+                    event = next(client.events())
+                except StopIteration:
+                    continue
+                else:
+                    self.main_callback(event.data)
+                    counter += 1
+                    if limit and counter >= limit:
+                        return
 
     def start(self, *args, **kwargs):#pylint:disable=unused-argument
         """

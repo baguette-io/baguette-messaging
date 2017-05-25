@@ -7,11 +7,7 @@ import traceback
 from kombu import Connection, Producer, Queue
 
 import farine.amqp
-
-class RPCError(Exception):
-    """
-    Generic RPC Exception.
-    """
+import farine.exceptions as exceptions
 
 class Client(farine.amqp.Consumer):
     """
@@ -48,7 +44,7 @@ class Client(farine.amqp.Consumer):
             self.response['__except__'] = traceback.format_exc()
 
         if self.response['__except__']:
-            raise RPCError(self.response['__except__'])
+            raise exceptions.RPCError(self.response['__except__'])
         return self.response['body']
 
     def callback(self, result, message):

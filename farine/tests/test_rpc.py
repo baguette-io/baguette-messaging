@@ -18,7 +18,7 @@ def test_rpc_decorator_call_timeout(rpc_client_factory, rabbitmq_proc, rabbitmq)
     it timeouts.
     """
     client = rpc_client_factory()
-    with pytest.raises(rpc.RPCError):
+    with pytest.raises(exceptions.RPCError):
         client.call()
 
 def test_rpc_decorator_call_exception(rpc_server_factory, rpc_client_factory):
@@ -45,7 +45,7 @@ def test_rpc_class_call_timeout(rabbitmq_proc, rabbitmq):
     its timeouts.
     """
     client = rpc.Client('server', 2)
-    with pytest.raises(rpc.RPCError) as err:
+    with pytest.raises(exceptions.RPCError) as err:
         client.call()
     assert 'timeout' in err.value.message
 
@@ -55,7 +55,7 @@ def test_rpc_long_call(rpc_server_factory):
     then the server received the message, but hasn't reply yet.
     """
     client = rpc.Client('server', 10)
-    with pytest.raises(rpc.RPCError) as err:
+    with pytest.raises(exceptions.RPCError) as err:
         client.slow()
     assert 'timeout' in err.value.message
 
@@ -67,5 +67,5 @@ def test_rpc_class_call_exception(rpc_server_factory):
     """
     server = rpc_server_factory('exception')
     client = rpc.Client('server')
-    with pytest.raises(rpc.RPCError):
+    with pytest.raises(exceptions.RPCError):
         client.exception()

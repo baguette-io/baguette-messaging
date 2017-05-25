@@ -4,11 +4,13 @@ import time
 import pytest
 import farine.amqp
 import farine.log
-import farine.rpc
+import farine.exceptions as exceptions
 import farine.rpc as rpc
 import farine.stream as stream
 import farine.settings
 import kombu.log
+import requests
+import requests_mock
 from rabbitpy import Exchange, Queue, Message
 from pytest_rabbitmq.factories.client import clear_rabbitmq
 
@@ -69,7 +71,7 @@ class Client(object):
         try:
             rpc.exception()
             return True
-        except farine.rpc.RPCError:
+        except exceptions.RPCError:
             return False
 
 def _rpc_server(callback_name):
@@ -93,14 +95,33 @@ def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
     return factory
 
 class SSEClient(object):
+    messages_consumed = 0
 
     @stream.http()
     def event(self, data):
+        self.messages_consumed += 1
         return data
 
 @pytest.fixture()
 def sse_client_factory():
     return SSEClient
+
+
+@pytest.fixture()
+def sse_server_ok():
+    with requests_mock.mock() as m:
+        text = """event: event_stream_detached
+data: {"remoteAddress":"10.1.0.234","eventType":"event_stream_detached","timestamp":"2017-05-25T17:27:08.373Z"}"""
+        m.get('http://unittest/v2/events', headers={'Accept':'text/event-stream'}, text=text)
+        yield
+
+@pytest.fixture()
+def sse_server_timeout():
+    def timeout(*args, **kwargs):
+        time.sleep(5)
+    with requests_mock.mock() as m:
+        m.get('http://unittest/v2/events', headers={'Accept':'text/event-stream'}, side_effect=timeout)
+        yield
 
 @pytest.fixture()
 def rpc_client_factory():
