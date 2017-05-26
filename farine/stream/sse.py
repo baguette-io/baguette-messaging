@@ -4,11 +4,10 @@ Module containing a consumer
 to a stream HTTP Connection.
 """
 import contextlib
-import requests
-import sseclient
 import farine.settings
 import farine.utils as utils
 from farine.mixins import EntryPointMixin
+import sseclient
 
 class SSEConsumer(EntryPointMixin):
     """
@@ -25,9 +24,9 @@ class SSEConsumer(EntryPointMixin):
         """
         self.callback = kwargs.get('callback')
         self.service = kwargs.get('service')
-        self.headers = kwargs.get('headers', {'Accept':'text/event-stream'})
         self.settings = getattr(farine.settings, self.service)
         self.endpoint = kwargs.get('endpoint', self.settings['endpoint'])
+        self.headers = kwargs.get('headers', {'Accept':'text/event-stream'})
         self.stream = None
 
 
@@ -48,15 +47,16 @@ class SSEConsumer(EntryPointMixin):
         :rtype: None
         """
         counter = 0
-        self.stream = requests.get(self.endpoint, stream=True, headers=self.headers)
-        client = sseclient.SSEClient(self.stream)
+        self.stream = sseclient.SSEClient(self.endpoint)
         while True:
             with utils.Timeout(timeout):
                 try:
-                    event = next(client.events())
+                    event = next(self.stream)
                 except StopIteration:
                     continue
                 else:
+                    if not event.data:
+                        continue
                     self.main_callback(event.data)
                     counter += 1
                     if limit and counter >= limit:

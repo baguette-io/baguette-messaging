@@ -12,11 +12,14 @@ setup(name='baguette-messaging',
       author_email='dev@baguette.io',
       packages=find_packages(),
       install_requires=[
-          'kombu==4.0.2',
+          'baguette-utils',
           'gevent==1.1.1',
+          'kombu==4.0.2',
           'PyYAML==3.11',
-          'requests==2.14.2',
-          'sseclient-py==1.5',
+          'sseclient==0.0.18',
+      ],
+      dependency_links=[
+          'git+https://github.com/baguette-io/baguette-utils.git#egg=baguette-utils-0.1',
       ],
       extras_require={
           'testing': [
@@ -26,6 +29,7 @@ setup(name='baguette-messaging',
               'pytest-cov',
               'pylint',
               'rabbitpy',
+              'requests-mock',
           ],
           'doc': [
               'Sphinx==1.4.4',

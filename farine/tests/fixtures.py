@@ -94,7 +94,7 @@ def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
         return process
     return factory
 
-class SSEClient(object):
+class StreamSSEClient(object):
     messages_consumed = 0
 
     @stream.http()
@@ -104,15 +104,14 @@ class SSEClient(object):
 
 @pytest.fixture()
 def sse_client_factory():
-    return SSEClient
-
+    return StreamSSEClient
 
 @pytest.fixture()
 def sse_server_ok():
     with requests_mock.mock() as m:
         text = """event: event_stream_detached
-data: {"remoteAddress":"10.1.0.234","eventType":"event_stream_detached","timestamp":"2017-05-25T17:27:08.373Z"}"""
-        m.get('http://unittest/v2/events', headers={'Accept':'text/event-stream'}, text=text)
+data: {"remoteAddress":"10.1.0.234","eventType":"event_stream_detached","timestamp":"2017-05-25T17:27:08.373Z"}\n\n"""
+        m.get('http://unittest/v2/events', text=text)
         yield
 
 @pytest.fixture()
