@@ -16,10 +16,12 @@ def publish(exchange=None, routing_key=None):
         def subwrapper(self, *args, **kwargs):
             if not hasattr(self, 'publish'):
                 name = getattr(self, 'service', self.__class__.__name__.lower())
+                _exchange = exchange or kwargs.get('exchange') or name
                 _routing_key = routing_key or kwargs.get('routing_key') or name
-                if kwargs.get('routing_key'):
-                    kwargs.pop('routing_key')
-                publish = Publisher(exchange or name, _routing_key, service=name)
+                for kw in ['exchange', 'routing_key']:
+                    if kwargs.get(kw):
+                        kwargs.pop(kw)
+                publish = Publisher(_exchange, _routing_key, service=name)
             return method(self, publish, *args, **kwargs)
         return subwrapper
     return wrapper
