@@ -115,14 +115,6 @@ data: {"remoteAddress":"10.1.0.234","eventType":"event_stream_detached","timesta
         yield
 
 @pytest.fixture()
-def sse_server_timeout():
-    def timeout(*args, **kwargs):
-        time.sleep(5)
-    with requests_mock.mock() as m:
-        m.get('http://unittest/v2/events', headers={'Accept':'text/event-stream'}, side_effect=timeout)
-        yield
-
-@pytest.fixture()
 def rpc_client_factory():
     return Client
 
