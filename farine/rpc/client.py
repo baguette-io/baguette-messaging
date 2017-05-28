@@ -1,10 +1,10 @@
 #-*- coding:utf-8 -*-
+#pylint:disable=attribute-defined-outside-init,method-hidden
 """
 RPC over AMQP implementation: client side.
 """
 import uuid
 import traceback
-from kombu import Connection, Producer, Queue
 
 import farine.amqp
 import farine.exceptions as exceptions
@@ -30,24 +30,33 @@ class Client(farine.amqp.Consumer):
     def __rpc__(self, *args, **kwargs):
         self.response = {'__except__': None, 'body': None}
         self.correlation_id = uuid.uuid4().hex
+        stream = kwargs['__stream__'] = kwargs.get('__stream__', False)
         message = {'args': args,
                    'kwargs': kwargs
-        }
+                  }
         publish = farine.amqp.Publisher(self.service, '{}__{}'.format(self.service, self.method))
         publish.send(message,
-            correlation_id=self.correlation_id,
-            reply_to=self.queue.name
-        )
-        try:
-            self.start(forever=False, timeout=self.timeout)
-        except:
-            self.response['__except__'] = traceback.format_exc()
+                     correlation_id=self.correlation_id,
+                     reply_to=self.queue.name
+                    )
+        run = True
+        while run:
+            try:
+                self.start(forever=False, timeout=self.timeout)
+            except:#pylint:disable=bare-except
+                self.response['__except__'] = traceback.format_exc()
 
-        if self.response['__except__']:
-            raise exceptions.RPCError(self.response['__except__'])
-        return self.response['body']
+            if self.response['__except__']:
+                raise exceptions.RPCError(self.response['__except__'])
+            if not stream:
+                run = False
+                return self.response['body']
 
     def callback(self, result, message):
+        """
+        Method called automatically when a message is received.
+        This will be executed before exiting self.start().
+        """
         message.ack()
         self.response['body'] = result
         self.response['__except__'] = result.get('__except__', None)

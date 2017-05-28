@@ -2,8 +2,7 @@
 """
 RPC over AMQP implementation: server side.
 """
-from kombu import Connection, Producer, Queue
-
+import types
 import traceback
 import farine.amqp
 
@@ -16,13 +15,32 @@ class Server(farine.amqp.Consumer):
     routing_key_format = '{service}__{callback_name}'
 
     @farine.amqp.publish()
-    def main_callback(self, publish, result, message):
+    def main_callback(self, publish, result, message):#pylint:disable=arguments-differ
         message.ack()
+        #1. Retrieve the callback result.
         try:
             result = self.callback(*result['args'], **result['kwargs'])
-        except:
+        except:#pylint:disable=bare-except
             result = {'__except__': traceback.format_exc()}
-        publish(result,
-                routing_key=message.properties['reply_to'],
-                correlation_id=message.properties['correlation_id'],
-        )
+            publish(result,
+                    routing_key=message.properties['reply_to'],
+                    correlation_id=message.properties['correlation_id'],
+                   )
+            return
+        #2. Convert the callback result to a generator
+        if not isinstance(result, types.GeneratorType):
+            result = iter((result,))
+        #3. Now iterate over the result until the end.
+        # If there is an exception, stop iterating.
+        try:
+            for res in result:
+                publish(res,
+                        routing_key=message.properties['reply_to'],
+                        correlation_id=message.properties['correlation_id'],
+                       )
+        except:#pylint:disable=bare-except
+            res = {'__except__': traceback.format_exc()}
+            publish(res,
+                    routing_key=message.properties['reply_to'],
+                    correlation_id=message.properties['correlation_id'],
+                   )

@@ -69,3 +69,14 @@ def test_rpc_class_call_exception(rpc_server_factory):
     client = rpc.Client('server')
     with pytest.raises(exceptions.RPCError):
         client.exception()
+
+def test_rpc_streaming_class_call_ok(rpc_server_factory):
+    """
+    Test that rpc.client.Client() works like rpc.client() decorator with streaming:
+    its message is processed.
+    """
+    return
+    server = rpc_server_factory('something')
+    client = rpc.Client('server')
+    response = list(i for i in client.stream(__stream__=True))
+    assert len(response) == 3

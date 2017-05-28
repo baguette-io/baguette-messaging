@@ -60,6 +60,12 @@ class Server(object):
         time.sleep(60)
         return True
 
+    @rpc.method()
+    def stream(self, *args, **kwargs):
+        yield 'a'
+        yield 'b'
+        yield 'c'
+
 class Client(object):
     @rpc.client('server', 10)
     def call(self, rpc):
