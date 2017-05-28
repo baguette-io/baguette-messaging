@@ -15,8 +15,6 @@ class Client(farine.amqp.Consumer):
     an AMQP publisher then consumer.
     """
     prefetch_count = 1
-    exclusive = True
-    auto_delete = True
     auto_generated = True
 
     def __init__(self, service, timeout=None):
@@ -28,7 +26,14 @@ class Client(farine.amqp.Consumer):
         return self.__rpc__
 
     def __rpc__(self, *args, **kwargs):
-        self.response = {'__except__': None, 'body': None}
+        """
+        RPC call logic.
+        There are two types of rpc call :
+        Streaming and basic.
+        We don't auto delete the queue because of the streaming call.
+        We delete it in the __exit__() method.
+        """
+        self.response = {'__except__': None, '__stream_end__': False, 'body': None}
         self.correlation_id = uuid.uuid4().hex
         stream = kwargs['__stream__'] = kwargs.get('__stream__', False)
         message = {'args': args,
@@ -48,9 +53,17 @@ class Client(farine.amqp.Consumer):
 
             if self.response['__except__']:
                 raise exceptions.RPCError(self.response['__except__'])
+            #1. If if it's not a streaming call, stop the loop and yield the response
             if not stream:
                 run = False
-                return self.response['body']
+                yield self.response['body']
+            #2. If the streaming call is not done, just yield
+            elif not self.response.get('__stream_end__'):
+                yield self.response['body']
+            #3. If it's the end of the streaming call, stop the loop
+            else:
+                run = False
+
 
     def callback(self, result, message):
         """
@@ -58,5 +71,6 @@ class Client(farine.amqp.Consumer):
         This will be executed before exiting self.start().
         """
         message.ack()
-        self.response['body'] = result
-        self.response['__except__'] = result.get('__except__', None)
+        self.response['body'] = result.get('body')
+        self.response['__except__'] = result.get('__except__')
+        self.response['__stream_end__'] = result.get('__stream_end__', False)
