@@ -122,8 +122,7 @@ Example:
 	
 	    @farine.stream.http()
 	    def get(self, data):
-            self.send(data)
-	        return True
+            return self.send(data)
 
 	    @farine.rpc.client('myotherservice')
 	    def send(self, rpc, data):
