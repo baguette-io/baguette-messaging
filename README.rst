@@ -119,9 +119,9 @@ Example:
 	import farine.stream
 	
 	class Client(object):
-	
-	    @farine.stream.http()
-	    def get(self, data):
+
+        @farine.stream.http()
+        def get(self, data):
             return self.send(data)
 
 	    @farine.rpc.client('myotherservice')
