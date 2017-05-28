@@ -3,7 +3,7 @@ baguette-messaging
 ==================
 
 Tiny Framework to build micro services.
-Currently only support **amqp** based micro services.
+Currently only support **amqp**, **rpc over amqp** and **http stream** based micro services.
 
 
 How it works
@@ -13,6 +13,9 @@ How it works
 AMQP
 ----
 
+| We declare a publisher:
+| the method decorated takes one parameter **publish** (farine.amqp.publisher.Publisher)
+
 .. code:: python
 
 	import farine.amqp
@@ -21,29 +24,38 @@ AMQP
 	
 	    @farine.amqp.publish(exchange='consume', routing_key='routing_key')
 	    def publish_dummy(self, publish):
-	        self.publish({'result':0})
+            """
+            :param publish: Send the data through AMQP.
+            :type publish: farine.amqp.publisher.Publisher
+	        publish({'result':0})
 	
+| And then a consumer :
+| the method decorated takes two parameters **body** (dict) and **message** (kombu.message.Message).
+
+.. code:: python
+
+	import farine.amqp
+
 	class Consume(object):
 	
 	    @farine.amqp.consume(exchange='publish', routing_key='routing_key')
 	    def consume_dummy(self, body, message):
-	        self.publish_dummy(body)
+            """
+            :param body: The message's data.
+            :type body: dict
+            :param message: Message class.
+            :type message: kombu.message.Message
+            """
 	        message.ack()
-	
-	    @farine.amqp.publish(exchange='publish', routing_key='routing_key2')
-	    def publish_consumer(self, publish, body):
-	        self.publish(body)
  
 
-In this code we declare one service:
 
-* consume : Read messages
-* publish : is not a service, as it doesn't have an event loop.
+RPC over AMQP
+-------------
 
-
-RPC
----
-
+| We need declare two services :
+| the server : Wait for a call(consumer), and answer(publisher).
+| The method decorated just takes **args** and **kwargs**
 
 .. code:: python
 
@@ -55,16 +67,67 @@ RPC
 	    def call_dummy(self, *args, **kwargs):
 	        return True
 	
+
+| And the client : Send a call(publisher), and wait for an anwser(consumer).
+| the method decorated takes one argument **rpc** (farine.rpc.client.Client).
+
+.. code:: python
+
 	class Client(object):
 	
-	    @farine.rpc.client('server')
-	    def dummy(self, rpc)
+	    @farine.rpc.client('myotherservice')
+	    def dummy(self, rpc):
+            """
+            :param rpc: The RPC client.
+            :type rpc: farine.rpc.client.Client
+            """
 	        return rpc.call_dummy()
 
-In this code we declare two services:
 
-* server : Wait for a call(consumer), and answer(publisher).
-* client : Send a call(publisher), and wait for an anwser(consumer).
+
+Stream
+------
+
+| We can declare a service that will listen to an HTTP SSE event :
+| the method decorated takes one argument **data** (dict).
+
+.. code:: python
+
+	import farine.stream
+	
+	class Client(object):
+	
+	    @farine.stream.http()
+	    def listen_event(self, data):
+            """
+            :param data: The event sent.
+            :type data: dict
+            """
+	        return True
+
+Overview
+--------
+
+| You can mix in a service everything:
+| it can be a consumer to an HTTP stream, and send back the result in RPC, etc.
+
+Example:
+
+.. code:: python
+
+	import farine.rpc
+	import farine.stream
+	
+	class Client(object):
+	
+	    @farine.stream.http()
+	    def get(self, data):
+            self.send(data)
+	        return True
+
+	    @farine.rpc.client('myotherservice')
+	    def send(self, rpc, data):
+	        return rpc.process(data)
 
 
 Configuration
@@ -73,7 +136,8 @@ Configuration
 By default the configuration file is located in */etc/farine.ini*.
 You can override this path using the environment variable **FARINE_INI**.
 
-It must contains a **DEFAULT** section, then one by service(using the **lowercase class name**)
+| It must contains one section by service (using the **lowercase class name**).
+| a **DEFAULT** section can also be present.
 
 Example
 -------
@@ -97,13 +161,4 @@ To launch a service, just run:
 
 	farine --start=mymodule
 
-
 It will try to import *mymodule.service* and launch it.
-
-Debug
-=====
-
-If you want to debug,
-just add to the message the key **__debug__** set to **True**.
-| The micro service will then launch **cProfile**  when receiving this message, and send the result to the **debug** queue
-of the message's exchange.
