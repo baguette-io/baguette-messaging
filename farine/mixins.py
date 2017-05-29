@@ -22,7 +22,7 @@ class EntryPointMixin(object):
         Main callback called when an event is received from an entry point.
 
         :returns: The entry point's callback.
-	:rtype: function
+        :rtype: function
         :raises NotImplementedError: When the entrypoint doesn't have the required attributes.
         """
         if not self.callback:
