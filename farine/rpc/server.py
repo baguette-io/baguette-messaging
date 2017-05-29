@@ -23,7 +23,7 @@ class Server(farine.amqp.Consumer):
             result = self.callback(*result['args'], **result['kwargs'])
         except:#pylint:disable=bare-except
             result = {'__except__': traceback.format_exc()}
-            publish({'body':result},
+            publish(result,
                     routing_key=message.properties['reply_to'],
                     correlation_id=message.properties['correlation_id'],
                    )
