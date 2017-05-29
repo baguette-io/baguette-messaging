@@ -55,7 +55,6 @@ class Client(farine.amqp.Consumer):
         Streaming and basic.
         We don't set the auto_delete flag to the queue because of the streaming call.
         """
-        self.response = {'__except__': None, '__stream_end__': False, 'body': None}
         self.correlation_id = uuid.uuid4().hex
         message = {'args': args,
                    'kwargs': kwargs
@@ -68,6 +67,7 @@ class Client(farine.amqp.Consumer):
         run = True
         while run:
             try:
+                self.response = {'__except__': None, '__stream_end__': False, 'body': None}
                 self.start(forever=False, timeout=self.timeout)
             except:#pylint:disable=bare-except
                 self.response['__except__'] = traceback.format_exc()
@@ -78,12 +78,12 @@ class Client(farine.amqp.Consumer):
             if not kwargs.get('__stream__', False):
                 run = False
                 yield self.response['body']
-            #2. If the streaming call is not done, just yield
-            elif not self.response.get('__stream_end__'):
-                yield self.response['body']
-            #3. If it's the end of the streaming call, stop the loop
-            else:
+            #2. If it's the end of the streaming call, stop the loop
+            elif self.response['__stream_end__']:
                 run = False
+            #3. If the streaming call is not done, just yield if we got an answer
+            elif self.response['body'] is not None:
+                yield self.response['body']
 
 
     def __getattr__(self, method, *args, **kwargs):
