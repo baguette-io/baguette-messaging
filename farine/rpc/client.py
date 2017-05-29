@@ -87,7 +87,5 @@ class Client(farine.amqp.Consumer):
 
 
     def __getattr__(self, method, *args, **kwargs):
-        if not self.__class__.__dict__.get(method):
-            setattr(self.__class__, method, self.__wrap_rpc__)
-            self.remote = method
-        return self.__class__.__dict__.get(method)
+        self.remote = method
+        return self.__wrap_rpc__
