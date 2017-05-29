@@ -17,7 +17,7 @@ class Server(farine.amqp.Consumer):
     @farine.amqp.publish()
     def main_callback(self, publish, result, message):#pylint:disable=arguments-differ
         message.ack()
-        stream = result['kwargs'].get('__stream__', False)
+        stream = result['kwargs'].pop('__stream__', False)
         #1. Retrieve the callback result.
         try:
             result = self.callback(*result['args'], **result['kwargs'])
