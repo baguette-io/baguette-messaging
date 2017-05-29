@@ -64,15 +64,18 @@ RPC over AMQP
 	class Server(object):
 	
 	    @farine.rpc.method()
-	    def call_dummy(self, *args, **kwargs):
+	    def dummy(self, *args, **kwargs):
 	        return True
 	
 
-| And the client : Send a call(publisher), and wait for an anwser(consumer).
+| And the client : Send a call(publisher), and wait for an answer(consumer).
 | the method decorated takes one argument **rpc** (farine.rpc.client.Client).
+| The result will be a dictionnary.
 
 .. code:: python
 
+	import farine.rpc
+	
 	class Client(object):
 	
 	    @farine.rpc.client('myotherservice')
@@ -81,12 +84,47 @@ RPC over AMQP
             :param rpc: The RPC client.
             :type rpc: farine.rpc.client.Client
             """
-	        return rpc.call_dummy()
+	        result = rpc.dummy()
 
 
+RPC Stream
+----------
 
-Stream
-------
+| We can also do streaming RPC call.
+| All you need to do is to add *__stream__ = True** to your RPC call.
+| Also, a generator is returned.
+
+Example:
+
+.. code:: python
+
+	import farine.rpc
+	
+	class Server(object):
+	
+	    @farine.rpc.method()
+	    def dummy(self, *args, **kwargs):
+	        yield 'a'
+	        yield 'b'
+	
+.. code:: python
+
+	import farine.rpc
+	
+	class Client(object):
+	
+	    @farine.rpc.client('myotherservice')
+	    def dummy(self, rpc):
+            """
+            :param rpc: The RPC client.
+            :type rpc: farine.rpc.client.Client
+            """
+	        for result in rpc.dummy(__stream__=True):
+                print result
+
+
+HTTP Stream
+-----------
 
 | We can declare a service that will listen to an HTTP SSE event :
 | the method decorated takes one argument **data** (dict).
