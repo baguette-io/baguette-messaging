@@ -24,11 +24,11 @@ AMQP
 	
 	    @farine.amqp.publish(exchange='consume', routing_key='routing_key')
 	    def publish_dummy(self, publish):
-            """
-            :param publish: Send the data through AMQP.
-            :type publish: farine.amqp.publisher.Publisher
-	    """
-	    publish({'result':0})
+                """
+                :param publish: Send the data through AMQP.
+                :type publish: farine.amqp.publisher.Publisher
+	        """
+	        publish({'result':0})
 	
 | And then a consumer :
 | the method decorated takes two parameters **body** (dict) and **message** (kombu.message.Message).
@@ -41,13 +41,13 @@ AMQP
 	
 	    @farine.amqp.consume(exchange='publish', routing_key='routing_key')
 	    def consume_dummy(self, body, message):
-            """
-            :param body: The message's data.
-            :type body: dict
-            :param message: Message class.
-            :type message: kombu.message.Message
-            """
-	    message.ack()
+                """
+                :param body: The message's data.
+                :type body: dict
+                :param message: Message class.
+                :type message: kombu.message.Message
+                """
+	        message.ack()
  
 
 
@@ -79,7 +79,7 @@ RPC over AMQP
 	
 	class Client(object):
 	
-	    @farine.rpc.client('myotherservice')
+            @farine.rpc.client('myotherservice')
 	    def dummy(self, rpc):
                 """
                 :param rpc: The RPC client.
