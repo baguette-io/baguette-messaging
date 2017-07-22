@@ -18,9 +18,6 @@ setup(name='baguette-messaging',
           'PyYAML==3.11',
           'sseclient==0.0.18',
       ],
-      dependency_links=[
-          'git+https://github.com/baguette-io/baguette-utils.git#egg=baguette-utils-0.1',
-      ],
       extras_require={
           'testing': [
               'mock',
