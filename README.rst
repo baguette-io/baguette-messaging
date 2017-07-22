@@ -81,10 +81,10 @@ RPC over AMQP
 	
 	    @farine.rpc.client('myotherservice')
 	    def dummy(self, rpc):
-            """
-            :param rpc: The RPC client.
-            :type rpc: farine.rpc.client.Client
-            """
+                """
+                :param rpc: The RPC client.
+                :type rpc: farine.rpc.client.Client
+                """
 	        result = rpc.dummy()
 
 
@@ -115,11 +115,11 @@ Example:
 	class Client(object):
 	
 	    @farine.rpc.client('myotherservice')
-	    def dummy(self, rpc):
-            """
-            :param rpc: The RPC client.
-            :type rpc: farine.rpc.client.Client
-            """
+	        def dummy(self, rpc):
+                """
+                :param rpc: The RPC client.
+                :type rpc: farine.rpc.client.Client
+                """
 	        for result in rpc.dummy(__stream__=True):
                 print result
 
@@ -138,10 +138,10 @@ HTTP Stream
 	
 	    @farine.stream.http()
 	    def listen_event(self, data):
-            """
-            :param data: The event sent.
-            :type data: dict
-            """
+                """
+                :param data: The event sent.
+                :type data: dict
+                """
 	        return True
 
 Overview
