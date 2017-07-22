@@ -27,6 +27,7 @@ AMQP
             """
             :param publish: Send the data through AMQP.
             :type publish: farine.amqp.publisher.Publisher
+	    """
 	        publish({'result':0})
 	
 | And then a consumer :
@@ -46,7 +47,7 @@ AMQP
             :param message: Message class.
             :type message: kombu.message.Message
             """
-	        message.ack()
+	    message.ack()
  
 
 
