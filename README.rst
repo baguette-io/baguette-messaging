@@ -121,7 +121,7 @@ Example:
                 :type rpc: farine.rpc.client.Client
                 """
 	        for result in rpc.dummy(__stream__=True):
-                print result
+                    print result
 
 
 HTTP Stream
