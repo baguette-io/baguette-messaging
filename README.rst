@@ -28,7 +28,7 @@ AMQP
             :param publish: Send the data through AMQP.
             :type publish: farine.amqp.publisher.Publisher
 	    """
-	        publish({'result':0})
+	    publish({'result':0})
 	
 | And then a consumer :
 | the method decorated takes two parameters **body** (dict) and **message** (kombu.message.Message).
