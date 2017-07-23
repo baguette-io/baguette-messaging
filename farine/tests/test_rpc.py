@@ -65,7 +65,6 @@ def test_rpc_long_call(rpc_server_factory, rabbitmq_proc, rabbitmq):
         client.slow()
     assert 'timeout' in err.value.message
 
-
 def test_rpc_class_call_exception(rpc_server_factory, rabbitmq_proc, rabbitmq):
     """
     Test that rpc.client.Client() works like rpc.client() decorator:
@@ -85,5 +84,5 @@ def test_rpc_streaming_class_call_ok(rpc_server_factory, rabbitmq_proc, rabbitmq
     clear_rabbitmq(rabbitmq_proc, rabbitmq)
     server = rpc_server_factory('stream')
     client = rpc.Client('server', 60)
-    response = list(i for i in client.stream(__stream__=True))
+    response = [i for i in client.stream(__stream__=True)]
     assert len(response) == 3

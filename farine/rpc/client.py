@@ -63,7 +63,8 @@ class Client(farine.amqp.Consumer):
         publish = farine.amqp.Publisher(self.service, '{}__{}'.format(self.service, self.remote))
         publish.send(message,
                      correlation_id=self.correlation_id,
-                     reply_to=self.queue
+                     reply_to=self.queue.name,
+                     declare=[self.queue],
                     )
         while self.running:
             try:

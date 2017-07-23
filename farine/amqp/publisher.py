@@ -56,24 +56,26 @@ class Publisher(object):
         routing_keys = [routing_keys] if isinstance(routing_keys, basestring) else routing_keys
         correlation_id = kwargs.get('correlation_id', None)
         reply_to = kwargs.get('reply_to', None)
-        reply_to_name = reply_to.name if reply_to else None
+        declare=[self.exchange] + kwargs.get('declare', [])
         conn = self.get_connection()
         with connections[conn].acquire(block=True) as connection:
             self.exchange.maybe_bind(connection)
+            #reply_to.maybe_bind(connection)
+            #reply_to.declare(True)
             with producers[connection].acquire(block=True) as producer:
                 for routing_key in routing_keys:
                     LOGGER.info('Send message %s to exchange %s with routing_key %s reply_to %s correlation_id %s',
-                                message, self.exchange.name, routing_key, reply_to_name, correlation_id)
+                                message, self.exchange.name, routing_key, reply_to, correlation_id)
                     producer.publish(
                         message,
                         exchange=self.exchange,
-                        declare=[self.exchange],
+                        declare=declare,
                         serializer=self.settings['serializer'],
                         routing_key=routing_key,
                         correlation_id=correlation_id,
                         retry=self.settings['retry'],
                         delivery_mode=self.settings['delivery_mode'],
-                        reply_to=reply_to_name,
+                        reply_to=reply_to,
                         retry_policy=self.settings['retry_policy'])
 
     def __call__(self, *args, **kwargs):

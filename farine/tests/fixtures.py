@@ -67,12 +67,12 @@ class Server(object):
         yield 'c'
 
 class Client(object):
-    @rpc.client('server', 10)
+    @rpc.client('server', 40)
     def call(self, rpc):
         result = rpc.something('un', deux='deux')
         return result
 
-    @rpc.client('server', 10)
+    @rpc.client('server', 40)
     def call_exception(self, rpc):
         try:
             rpc.exception()
