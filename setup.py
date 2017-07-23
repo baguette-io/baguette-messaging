@@ -12,7 +12,7 @@ setup(name='baguette-messaging',
       url='baguette.io',
       author='https://github.com/baguette-io/baguette-messaging/',
       author_email='pydavid@baguette.io',
-      keywords=['micro', 'services', 'amqp', 'rpc'],
+      keywords=['micro', 'services', 'amqp', 'rpc', 'messaging'],
       classifiers=[
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.7',
