@@ -21,11 +21,12 @@ def test_rpc_decorator_call_timeout(rpc_client_factory, rabbitmq_proc, rabbitmq)
     with pytest.raises(exceptions.RPCError):
         client.call()
 
-def test_rpc_decorator_call_exception(rpc_server_factory, rpc_client_factory):
+def test_rpc_decorator_call_exception(rpc_server_factory, rpc_client_factory, rabbitmq_proc, rabbitmq):
     """
     Test that when the server raises an error, it's propagated
     to the client.
     """
+    clear_rabbitmq(rabbitmq_proc, rabbitmq)
     server = rpc_server_factory('exception')
     client = rpc_client_factory()
     assert client.call_exception() == False
@@ -76,6 +77,6 @@ def test_rpc_streaming_class_call_ok(rpc_server_factory):
     its message is processed.
     """
     server = rpc_server_factory('stream')
-    client = rpc.Client('server')
+    client = rpc.Client('server', 60)
     response = list(i for i in client.stream(__stream__=True))
     assert len(response) == 3

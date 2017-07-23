@@ -17,7 +17,6 @@ class Server(farine.amqp.Consumer):
     @farine.amqp.publish()
     def main_callback(self, publish, result, message):#pylint:disable=arguments-differ
         message.ack()
-        stream = result['kwargs'].pop('__stream__', False)
         #1. Retrieve the callback result.
         try:
             result = self.callback(*result['args'], **result['kwargs'])
@@ -35,15 +34,14 @@ class Server(farine.amqp.Consumer):
         # If there is an exception, stop iterating.
         try:
             for res in result:
-                publish({'body':res},
+                publish({'body':res, '__end__': False},
                         routing_key=message.properties['reply_to'],
                         correlation_id=message.properties['correlation_id'],
                        )
-            if stream:
-                publish({'__stream_end__': True},
-                        routing_key=message.properties['reply_to'],
-                        correlation_id=message.properties['correlation_id'],
-                       )
+            publish({'__end__': True},
+                    routing_key=message.properties['reply_to'],
+                    correlation_id=message.properties['correlation_id'],
+                   )
         except:#pylint:disable=bare-except
             res = {'__except__': traceback.format_exc()}
             publish(res,

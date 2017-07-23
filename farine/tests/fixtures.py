@@ -21,7 +21,7 @@ def settings():
 @pytest.fixture(autouse=True)
 def logging():
     farine.log.setup_logging(__name__, False)
-    kombu.log.setup_logging(loglevel='DEBUG')
+    kombu.log.setup_logging(loglevel='INFO')
 
 class Publish(object):
 

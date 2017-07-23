@@ -3,6 +3,7 @@
 """
 RPC over AMQP implementation: client side.
 """
+import Queue
 import uuid
 import traceback
 
@@ -24,16 +25,16 @@ class Client(farine.amqp.Consumer):
         super(Client, self).__init__(service, service, service=service)
         self.timeout = timeout
         self.remote = None
+        self.running = True
+        self.results = Queue.Queue()
 
     def callback(self, result, message):
         """
         Method called automatically when a message is received.
         This will be executed before exiting self.start().
         """
+        self.results.put(result)
         message.ack()
-        self.response['body'] = result.get('body')
-        self.response['__except__'] = result.get('__except__')
-        self.response['__stream_end__'] = result.get('__stream_end__', False)
 
     def __wrap_rpc__(self, *args, **kwargs):
         """
@@ -62,29 +63,22 @@ class Client(farine.amqp.Consumer):
         publish = farine.amqp.Publisher(self.service, '{}__{}'.format(self.service, self.remote))
         publish.send(message,
                      correlation_id=self.correlation_id,
-                     reply_to=self.queue.name
+                     reply_to=self.queue
                     )
-        run = True
-        while run:
+        while self.running:
             try:
-                self.response = {'__except__': None, '__stream_end__': False, 'body': None}
                 self.start(forever=False, timeout=self.timeout)
             except:#pylint:disable=bare-except
-                self.response['__except__'] = traceback.format_exc()
-
-            if self.response['__except__']:
-                raise exceptions.RPCError(self.response['__except__'])
-            #1. If if it's not a streaming call, stop the loop and yield the response
-            if not kwargs.get('__stream__', False):
-                run = False
-                yield self.response['body']
-            #2. If it's the end of the streaming call, stop the loop
-            elif self.response['__stream_end__']:
-                run = False
-            #3. If the streaming call is not done, just yield if we got an answer
-            elif self.response['body'] is not None:
-                yield self.response['body']
-
+                raise exceptions.RPCError(traceback.format_exc())
+            # Iterate over the queue
+            while not self.results.empty():
+                result = self.results.get()
+                if result.get('__except__'):
+                    raise exceptions.RPCError(result['__except__'])
+                elif result.get('__end__'):
+                    self.running = False
+                elif result.get('body'):
+                    yield result['body']
 
     def __getattr__(self, method, *args, **kwargs):
         self.remote = method
