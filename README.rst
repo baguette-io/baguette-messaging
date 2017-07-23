@@ -2,12 +2,11 @@
 baguette-messaging
 ==================
 
-Tiny Framework to build micro services.
-Currently only support **amqp**, **rpc over amqp** and **http stream** based micro services.
-
 .. image:: https://travis-ci.org/baguette-io/baguette-messaging.svg?branch=master
     :target: https://travis-ci.org/baguette-io/baguette-messaging
 
+Tiny Framework to build micro services.
+Currently only support **amqp**, **rpc over amqp** and **http stream** based micro services.
 
 How it works
 ============
