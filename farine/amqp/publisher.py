@@ -61,9 +61,6 @@ class Publisher(object):
         with connections[conn].acquire(block=True) as connection:
             self.exchange.maybe_bind(connection)
             with producers[connection].acquire(block=True) as producer:
-                if reply_to:
-                    reply_to.maybe_bind(connection)
-                    reply_to.declare()
                 for routing_key in routing_keys:
                     LOGGER.info('Send message %s to exchange %s with routing_key %s reply_to %s correlation_id %s',
                                 message, self.exchange.name, routing_key, reply_to_name, correlation_id)
