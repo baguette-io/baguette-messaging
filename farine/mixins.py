@@ -2,10 +2,12 @@
 """
 Module containing all the farine mixins.
 """
+import six
 import abc
 import contextlib
 import farine.settings
 
+@six.add_metaclass(abc.ABCMeta)
 class EntryPointMixin(object):
     """
     | Entry point Mixin.
@@ -13,7 +15,6 @@ class EntryPointMixin(object):
     | are called `Entry Point` and then must inherit from it.
     | They will implement debug mode, monitoring, etc.
     """
-    __metaclass__ = abc.ABCMeta
 
     callback = None
 
