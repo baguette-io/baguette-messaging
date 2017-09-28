@@ -12,11 +12,11 @@ import farine.log
 farine.log.setup_logging(__name__)
 kombu.log.setup_logging()
 
-def main(service=None):
+def main(module=None):
     """
     Entry point.
     """
-    if not service:
+    if not module:
         #Parsing
         parser = argparse.ArgumentParser()
         parser.add_argument('-s', '--start', type=str, help='Start the module', required=True,

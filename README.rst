@@ -164,7 +164,7 @@ models.py:
 
     from farine.connectors.sql import *
     
-    class User(object):
+    class User(Model):
         name = CharField()
 
 service.py:

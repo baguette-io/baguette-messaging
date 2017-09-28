@@ -34,8 +34,8 @@ class EntryPointMixin(object):
 
         #1. Start all the middlewares
         with self.debug(*args, **kwargs):
-            #2. `Real` callback
             with self.database():
+                #2. `Real` callback
                 result = self.callback(*args, **kwargs)#pylint: disable=not-callable
         return result
 

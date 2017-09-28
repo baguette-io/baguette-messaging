@@ -76,7 +76,7 @@ class Server(object):
 
     @rpc.method()
     def get(self):
-        return User.select()
+        return User.select().count()
 
 class Client(object):
     @rpc.client('server', 40)

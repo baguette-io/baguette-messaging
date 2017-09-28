@@ -2,6 +2,9 @@
 import farine.discovery
 from peewee import *
 
+class Meta:
+    database = None
+
 def setup(settings):
     """
     Setup the database connection.
@@ -23,11 +26,5 @@ def init(module, db):
     """
     Initialize the models.
     """
-    meta = type('Meta', (object,), {'database':db})
-    BaseModel = type('BaseModel', (Model,), {'Meta': meta})
-    models = farine.discovery.import_models(module)
-    for model in models:
-        model = type(model.__name__, (BaseModel,), dict(model.__dict__))
-        #model.__bases__ = (BaseModel, object,)
-        model.create_table(fail_silently=True)
-    db.close()
+    for model in farine.discovery.import_models(module):
+        model._meta.database = db

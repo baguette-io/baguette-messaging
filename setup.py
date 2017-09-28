@@ -50,6 +50,7 @@ setup(name='baguette-messaging',
       entry_points={
           'console_scripts':[
               'farine=farine.main:main',
+              'farine-migrate=farine.connectors.sql.entrypoints:migrate',
           ],
       },
       package_data={
