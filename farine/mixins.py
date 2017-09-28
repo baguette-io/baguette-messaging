@@ -54,10 +54,9 @@ class EntryPointMixin(object):
         """
         #1. Initialize
         self.callback.im_self.db = sql.setup(self.settings)
-        print self.callback.__dict__
-        print dir(self.callback)
         if self.callback.im_self.db:
-            sql.init(self.callback.__module__, self.callback.im_self.db)
+            module = '.'.join(self.callback.im_self.__module__.split('.')[:-1])
+            sql.init(module, self.callback.im_self.db)
             self.callback.im_self.db.connect()
         yield
         #2. Cleanup

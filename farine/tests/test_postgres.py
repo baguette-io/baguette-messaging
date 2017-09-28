@@ -9,7 +9,6 @@ def test_postgres_simple(postgres,rpc_server_factory, rpc_client_factory, rabbit
     """
     Try to import and create an object.
     """
-    print 'ok'
     clear_rabbitmq(rabbitmq_proc, rabbitmq)
     server = rpc_server_factory('save')
     client = rpc_client_factory()

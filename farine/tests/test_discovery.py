@@ -16,4 +16,4 @@ def test_import_services_ok():
 def test_start(channel, consumer_factory):
     consumer = consumer_factory()
     assert farine.discovery.ENTRYPOINTS
-    assert farine.discovery.start(False)
+    assert farine.discovery.start()

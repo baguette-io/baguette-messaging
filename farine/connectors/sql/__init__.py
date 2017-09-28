@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+import farine.discovery
 from peewee import *
 
 def setup(settings):
@@ -24,8 +25,9 @@ def init(module, db):
     """
     meta = type('Meta', (object,), {'database':db})
     BaseModel = type('BaseModel', (Model,), {'Meta': meta})
-    models = farine.discovery.import_model(module)
+    models = farine.discovery.import_models(module)
     for model in models:
-        print model.__class__
-        model.__class__ = type(model.__class__,(BaseModel,), {})
+        model = type(model.__name__, (BaseModel,), dict(model.__dict__))
+        #model.__bases__ = (BaseModel, object,)
         model.create_table(fail_silently=True)
+    db.close()
