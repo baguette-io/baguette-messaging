@@ -146,13 +146,38 @@ HTTP Stream
                 """
 	        return True
 
+
+Database
+========
+
+| *baguette-messaging* is using peewee to manage databases connections (only postgresql is supported for the moment)
+| In order for it to detect that you are using a database, you need to create a **models.py** module.
+| Then, each time we enter into a method (amqp,rpc,stream) a database connection will be created and closed.
+| You can use the database connection using **self.db**, to manage transactions for example.
+
+Example
+-------
+
+.. code:: python
+
+	import farine.amqp
+	from models import User
+	
+	class Client(object):
+
+	    @farine.amqp.consume(exchange='exchange', routing_key='routing_key')
+	    def select(self, body, message):
+	        return User.select().where(User.id==1)
+
+
 Overview
+========
+
+| You can mix in a service, everything:
+| it can be a consumer of an HTTP stream, and send back the result in RPC, etc.
+
+Example
 --------
-
-| You can mix in a service everything:
-| it can be a consumer to an HTTP stream, and send back the result in RPC, etc.
-
-Example:
 
 .. code:: python
 
@@ -190,6 +215,24 @@ Example
         [consume]
         enabled = true
 
+
+Database
+--------
+
+If you use a database connection, you have to add in the **[DEFAULT]** section the db parameters:
+
+::
+
+    [DEFAULT]
+    db_connector = postgres (required)
+    db_name = name (required)
+    db_user = user (required)
+    db_host = host (required)
+    db_password = password (required)
+    db_port = port (optional)
+    db_max_conn = max_connections (optional)
+    db_stale_timeout = stale timeout (optional)
+    db_timeout = timeout (optional)
 
 
 Launch

@@ -25,13 +25,18 @@ setup(name='baguette-messaging',
           'baguette-utils',
           'gevent==1.1.1',
           'kombu==4.0.2',
+          'peewee==2.10.1',
           'PyYAML==3.11',
           'sseclient==0.0.18',
       ],
       extras_require={
+          'postgres': [
+              'psycopg2==2.7.3.1'
+          ],
           'testing': [
               'mock',
               'pytest',
+              'pytest-postgresql',
               'pytest-rabbitmq',
               'pytest-cov',
               'pylint',

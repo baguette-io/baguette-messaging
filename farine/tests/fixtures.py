@@ -13,6 +13,7 @@ import requests
 import requests_mock
 from rabbitpy import Exchange, Queue, Message
 from pytest_rabbitmq.factories.client import clear_rabbitmq
+from .models import User
 
 @pytest.fixture(autouse=True)
 def settings():
@@ -66,6 +67,17 @@ class Server(object):
         yield 'b'
         yield 'c'
 
+    @rpc.method()
+    def save(self, name):
+        with self.db.transaction() as txn:
+            User.create(name=name)
+            txn.commit()
+        return True
+
+    @rpc.method()
+    def get(self):
+        return User.select()
+
 class Client(object):
     @rpc.client('server', 40)
     def call(self, rpc):
@@ -80,10 +92,19 @@ class Client(object):
         except exceptions.RPCError:
             return False
 
-def _rpc_server(callback_name):
+    @rpc.client('server', 40)
+    def save(self, rpc, name):
+        return rpc.save(name)
+
+    @rpc.client('server', 40)
+    def get(self, rpc):
+        return rpc.get()
+
+
+def _rpc_server(callback_name, service='server'):
     server = Server()
     farine.settings.load()
-    rpc.Server(service='server', callback_name=callback_name, callback=getattr(server, callback_name)).start()
+    rpc.Server(service=service, callback_name=callback_name, callback=getattr(server, callback_name)).start()
 
 @pytest.fixture()
 def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
