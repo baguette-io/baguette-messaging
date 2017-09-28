@@ -4,7 +4,7 @@ Module containing all the farine mixins.
 """
 import abc
 import contextlib
-import farine.settings
+import farine.connectors.sql as sql
 
 class EntryPointMixin(object):
     """
@@ -30,10 +30,13 @@ class EntryPointMixin(object):
         if not self.settings:
             raise NotImplementedError('Entrypoints must declare `settings`')
 
+        self.callback.im_self.db = None
+
         #1. Start all the middlewares
         with self.debug(*args, **kwargs):
-            #2. `Real` callback
-            result = self.callback(*args, **kwargs)#pylint: disable=not-callable
+            with self.database():
+                #2. `Real` callback
+                result = self.callback(*args, **kwargs)#pylint: disable=not-callable
         return result
 
     @abc.abstractmethod
@@ -42,3 +45,20 @@ class EntryPointMixin(object):
         | The debug implementation for the entry point,
         | Each entry point must have it's own debug logic.
         """
+
+    @contextlib.contextmanager
+    def database(self):
+        """
+        Before the callback is called, initialize the database if needed.
+        :rtype: None
+        """
+        #1. Initialize
+        self.callback.im_self.db = sql.setup(self.settings)
+        if self.callback.im_self.db:
+            module = '.'.join(self.callback.im_self.__module__.split('.')[:-1])
+            sql.init(module, self.callback.im_self.db)
+            self.callback.im_self.db.connect()
+        yield
+        #2. Cleanup
+        if self.callback.im_self.db:
+            self.callback.im_self.db.close()

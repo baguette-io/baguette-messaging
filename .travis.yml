@@ -3,8 +3,9 @@ python:
       - "2.7"
 services:
       - rabbitmq
+      - postgresql
 install:
-      - pip install -e .[testing]
+      - pip install -e .[testing,postgres]
 script: 
       - py.test -xvls farine/tests/
 

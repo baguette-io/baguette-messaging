@@ -6,6 +6,7 @@
 
 |TODO: J'en ai vu de la merde, mais de la merde comme ca. CLEANUP.
 """
+import importlib
 import inspect
 import logging
 import sys
@@ -31,6 +32,23 @@ def import_module(module):
     except ImportError:
         LOGGER.error('No module/service found. Quit.')
         sys.exit(0)
+
+def import_models(module):
+    """
+    | Given a module `service`, try to import its models module.
+
+    :param module: The module's name to import the models.
+    :type module: str
+    :rtype: list
+    :returns: all the models defined.
+    """
+    try:
+        module = importlib.import_module('{0}.models'.format(module))
+        md = module.__dict__
+    except ImportError:
+        return []
+    else:
+        return [md[c] for c in md if (isinstance(md[c], type) and md[c].__module__ == module.__name__)]
 
 def start():
     """

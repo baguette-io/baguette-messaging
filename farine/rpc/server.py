@@ -19,7 +19,8 @@ class Server(farine.amqp.Consumer):
         message.ack()
         #1. Retrieve the callback result.
         try:
-            result = self.callback(*result['args'], **result['kwargs'])
+            with self.database():
+                result = self.callback(*result['args'], **result['kwargs'])
         except:#pylint:disable=bare-except
             result = {'__except__': traceback.format_exc()}
             publish(result,
