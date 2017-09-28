@@ -158,6 +158,17 @@ Database
 Example
 -------
 
+models.py:
+
+.. code:: python
+
+    from farine.connectors.sql import *
+    
+    class User(object):
+        name = CharField()
+
+service.py:
+
 .. code:: python
 
 	import farine.amqp
