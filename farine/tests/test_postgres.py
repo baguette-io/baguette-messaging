@@ -11,11 +11,11 @@ def test_postgres_simple(postgres, rpc_server_factory, rpc_client_factory, rabbi
     Try to create an object and then count them : must succeed.
     """
     clear_rabbitmq(rabbitmq_proc, rabbitmq)
-    db = farine.connectors.sql.setup(farine.settings.server)
+    db = farine.connectors.sql.setup(farine.settings.model)
     db.execute_sql('CREATE TABLE "user" ("id" SERIAL NOT NULL PRIMARY KEY, "name" VARCHAR(255) NOT NULL)')
     db.close()
-    server1 = rpc_server_factory('save')
-    server2 = rpc_server_factory('get')
+    server1 = rpc_server_factory('save', 'model')
+    server2 = rpc_server_factory('get', 'model')
     client = rpc_client_factory()
     #
     assert client.save('david') == True

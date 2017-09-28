@@ -67,6 +67,7 @@ class Server(object):
         yield 'b'
         yield 'c'
 
+class Model(object):
     @rpc.method()
     def save(self, name):
         with self.db.transaction() as txn:
@@ -92,25 +93,25 @@ class Client(object):
         except exceptions.RPCError:
             return False
 
-    @rpc.client('server', 40)
+    @rpc.client('model', 40)
     def save(self, rpc, name):
         return rpc.save(name)
 
-    @rpc.client('server', 40)
+    @rpc.client('model', 40)
     def get(self, rpc):
         return rpc.get()
 
 
 def _rpc_server(callback_name, service='server'):
-    server = Server()
+    callbacks = {'server': Server, 'model': Model}
     farine.settings.load()
-    rpc.Server(service=service, callback_name=callback_name, callback=getattr(server, callback_name)).start()
+    rpc.Server(service=service, callback_name=callback_name, callback=getattr(callbacks[service](), callback_name)).start()
 
 @pytest.fixture()
 def rpc_server_factory(request, rabbitmq_proc, rabbitmq):
-    def factory(callback_name):
+    def factory(callback_name, service='server'):
         process = multiprocessing.Process(
-            target=lambda:_rpc_server(callback_name),
+            target=lambda:_rpc_server(callback_name, service),
         )
         def cleanup():
             process.terminate()
