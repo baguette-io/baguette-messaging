@@ -1,6 +1,26 @@
 #-*- coding:utf-8 -*-
+import json
 import farine.discovery
+import bson
+from peewee import Model as PModel
 from peewee import *
+from playhouse.shortcuts import model_to_dict
+try:
+    from playhouse.postgres_ext import *
+except ImportError:
+    pass
+
+
+class Model(PModel):
+    """
+    Base model that extends the peewee one.
+    """
+
+    def to_json(self):
+        """
+        Convert a model into a json using the playhouse shortcut.
+        """
+        return bson.dumps(model_to_dict(self))
 
 class Meta:
     database = None

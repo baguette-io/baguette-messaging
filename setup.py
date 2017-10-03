@@ -23,6 +23,7 @@ setup(name='baguette-messaging',
       packages=find_packages(),
       install_requires=[
           'baguette-utils',
+          'bson==0.5.0',
           'gevent==1.1.1',
           'kombu==4.0.2',
           'peewee==2.10.1',
