@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 
 setup(name='baguette-messaging',
-      version='0.11',
+      version='0.12',
       description='Baguette messaging framework',
       long_description=open('README.rst').read(),
       url='https://github.com/baguette-io/baguette-messaging/',
