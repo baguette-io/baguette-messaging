@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 import json
 import farine.discovery
-import bson
+import sel.serializers
 from peewee import Model as PModel
 from peewee import *
 from playhouse.shortcuts import model_to_dict
@@ -20,7 +20,7 @@ class Model(PModel):
         """
         Convert a model into a json using the playhouse shortcut.
         """
-        return bson.dumps(model_to_dict(self))
+        return json.dumps(model_to_dict(self), cls=sel.serializers.JsonEncoder)
 
 class Meta:
     database = None
