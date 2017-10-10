@@ -9,15 +9,15 @@ handlers:
         formatter: simple
     console:
         class: logging.StreamHandler
-        level: DEBUG
+        level: INFO
         formatter: simple
         stream: ext://sys.stdout
 
 loggers:
     __name__:
-        level: DEBUG
+        level: INFO
         handlers: [console, syslog]
         propagate: no
 root:
-    level: NOTSET
+    level: INFO
     handlers: [console, syslog]
