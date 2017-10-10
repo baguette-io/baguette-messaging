@@ -42,7 +42,7 @@ class Client(farine.amqp.Consumer):
         | if it's a non streaming call, then we return the next and only one element of the generator.
         | Otherwise we returns the generator.
         """
-        stream = kwargs.get('__stream__', False)
+        stream = kwargs.pop('__stream__', False)
         result = self.__rpc__(*args, **kwargs)
         if stream:
             return result
