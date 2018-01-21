@@ -4,6 +4,9 @@ python:
 services:
       - rabbitmq
       - postgresql
+addons:
+      postgresql: "9.6"
+
 install:
       - pip install -e .[testing,postgres]
 script: 
