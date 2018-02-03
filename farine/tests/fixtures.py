@@ -7,6 +7,7 @@ import farine.log
 import farine.exceptions as exceptions
 import farine.rpc as rpc
 import farine.stream as stream
+import farine.execute as execute
 import farine.settings
 import kombu.log
 import requests
@@ -141,6 +142,15 @@ def sse_server_ok():
 data: {"remoteAddress":"10.1.0.234","eventType":"event_stream_detached","timestamp":"2017-05-25T17:27:08.373Z"}\n\n"""
         m.get('http://unittest/v2/events', text=text)
         yield
+
+class ExecuteMethodClient(object):
+    @execute.method()
+    def mymethod(self):
+        return 'executed'
+
+@pytest.fixture()
+def execute_client_factory():
+    return ExecuteMethodClient
 
 @pytest.fixture()
 def rpc_client_factory():

@@ -131,6 +131,7 @@ HTTP Stream
 
 | We can declare a service that will listen to an HTTP SSE event :
 | the method decorated takes one argument **data** (dict).
+| In the configuration file, we just need to setup the endpoint to listen.
 
 .. code:: python
 
@@ -145,6 +146,25 @@ HTTP Stream
                 :type data: dict
                 """
 	        return True
+
+Execute method
+--------------
+
+| If all we need is to execute a method, we can use `farine.execute.method`.
+| It will restart it, if it ends (customizable).
+
+
+.. code:: python
+
+	import farine.execute
+	
+	class Client(object):
+	
+	    @farine.execute.method()
+	    def my_own_stuff(self):
+            """
+            Your own code.
+            """
 
 
 Database
