@@ -3,7 +3,6 @@ python:
       - "2.7"
 services:
       - rabbitmq
-      - postgresql
 addons:
       postgresql: "9.6"
 
