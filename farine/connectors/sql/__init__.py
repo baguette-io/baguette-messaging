@@ -16,11 +16,14 @@ class Model(PModel):
     Base model that extends the peewee one.
     """
 
-    def to_json(self):
+    def to_json(self, extras=None):
         """
         Convert a model into a json using the playhouse shortcut.
         """
-        return json.dumps(model_to_dict(self), cls=sel.serializers.JsonEncoder)
+        extras = extras or {}
+        to_dict = model_to_dict(self)
+        to_dict.update(extras)
+        return json.dumps(to_dict, cls=sel.serializers.JsonEncoder)
 
 class Meta:
     database = None
