@@ -44,11 +44,11 @@ def import_models(module):
     """
     try:
         module = importlib.import_module('{0}.models'.format(module))
-        md = module.__dict__
     except ImportError:
         return []
     else:
-        return [md[c] for c in md if (isinstance(md[c], type) and md[c].__module__ == module.__name__)]
+        clsmembers = inspect.getmembers(module, lambda member: inspect.isclass(member) and member.__module__ == module.__name__)
+        return [kls for name, kls in clsmembers]
 
 def start():
     """
