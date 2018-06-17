@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 
 setup(name='baguette-messaging',
-      version='0.18',
+      version='0.19',
       description='Baguette messaging framework',
       long_description=open('README.rst').read(),
       url='https://github.com/baguette-io/baguette-messaging/',
@@ -26,7 +26,7 @@ setup(name='baguette-messaging',
           'gevent==1.1.1',
           'kombu==4.0.2',
           'peewee==2.10.1',
-          'PyYAML==3.11',
+          'PyYAML==3.12',
           'sseclient==0.0.18',
       ],
       extras_require={
