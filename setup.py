@@ -26,7 +26,7 @@ setup(name='baguette-messaging',
           'gevent==1.1.1',
           'kombu==4.0.2',
           'peewee==2.10.1',
-          'PyYAML==3.12',
+          'PyYAML==5.4',
           'sseclient==0.0.18',
       ],
       extras_require={
